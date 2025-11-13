@@ -39,8 +39,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  "Pizzeria Antonion verkkopalvelu on tarkoitettu ruoan tilaamiseen ja pizzerian tietojen katseluun. Käyttämällä palvelua hyväksyt nämä käyttöehdot.",
-                  "Pizzeria Antonio's web service is intended for food ordering and viewing restaurant information. By using the service, you accept these terms of use."
+                  "ravintola babylonn verkkopalvelu on tarkoitettu ruoan tilaamiseen ja ravintolan tietojen katseluun. Käyttämällä palvelua hyväksyt nämä käyttöehdot.",
+                  "ravintola babylon's web service is intended for food ordering and viewing restaurant information. By using the service, you accept these terms of use."
                 )}
               </p>
             </CardContent>
@@ -100,8 +100,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  "Pizzeria Antonio ei vastaa mahdollisista teknisistä ongelmista verkkopalvelussa. Reklamaatiot ruoasta tulee tehdä 24 tunnin sisällä toimituksesta.",
-                  "Pizzeria Antonio is not responsible for possible technical problems in the web service. Food complaints must be made within 24 hours of delivery."
+                  "ravintola babylon ei vastaa mahdollisista teknisistä ongelmista verkkopalvelussa. Reklamaatiot ruoasta tulee tehdä 24 tunnin sisällä toimituksesta.",
+                  "ravintola babylon is not responsible for possible technical problems in the web service. Food complaints must be made within 24 hours of delivery."
                 )}
               </p>
             </CardContent>
@@ -119,10 +119,10 @@ export default function Terms() {
                 )}
               </p>
               <p>
-                <strong>Pizzeria Antonio</strong><br />
+                <strong>ravintola babylon</strong><br />
                 Rauhankatu 19 c, 15110 Lahti<br />
                 Puhelin: +35835899089<br />
-                Sähköposti: info@pizzeriaantonio.fi
+                Sähköposti: info@ravintolababylon.fi
               </p>
             </CardContent>
           </Card>

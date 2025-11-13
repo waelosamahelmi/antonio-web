@@ -1,9 +1,9 @@
 import React from 'react';
 import { useRestaurantConfig } from '../hooks/use-restaurant-config';
 import { useRestaurantSettings } from '../hooks/use-restaurant-settings';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Skeleton } from '../components/ui/skeleton';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Badge } from './ui/badge';
+import { Skeleton } from './ui/skeleton';
 import { Clock, Store, Phone, Mail, MapPin } from 'lucide-react';
 
 /**

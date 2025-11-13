@@ -270,17 +270,17 @@ export function mergeConfigWithDatabaseSettings(
   return mergedConfig;
 }
 
-// Default configuration for Pizzeria Antonio
-export const pizzeria_antonio_CONFIG: RestaurantConfig = {
-  name: "Pizzeria Antonio",
-  nameEn: "Pizzeria Antonio",
+// Default configuration for ravintola babylon
+export const ravintola_babylon_CONFIG: RestaurantConfig = {
+  name: "ravintola babylon",
+  nameEn: "ravintola babylon",
   tagline: "Laadukkaita aterioita Lahden sydämessä",
   taglineEn: "Quality meals in the heart of Lahti",
-  description: "Pizzeria Antoniossa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
-  descriptionEn: "At Pizzeria Antonio we offer quality meals and invite you to taste our delicious food.",
+  description: "ravintola babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
+  descriptionEn: "At ravintola babylon we offer quality meals and invite you to taste our delicious food.",
   
   phone: "+35835899089",
-  email: "info@pizzeriaantonio.fi",
+  email: "info@ravintolababylon.fi",
   address: {
     street: "Rauhankatu 19 c",
     postalCode: "15110",
@@ -405,8 +405,8 @@ export const pizzeria_antonio_CONFIG: RestaurantConfig = {
   },
   
   about: {
-    story: "Pizzeria Antoniossa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
-    storyEn: "At Pizzeria Antonio we offer quality meals and invite you to taste our delicious food.",
+    story: "ravintola babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
+    storyEn: "At ravintola babylon we offer quality meals and invite you to taste our delicious food.",
     mission: "Tarjoamme Lahdessa parhaita pizzoja, kebabeja ja muita herkullisia ruokia ystävällisessä palvelussa.",
     missionEn: "We offer the best pizzas, kebabs and other delicious food in Lahti with friendly service.",
     specialties: [
@@ -456,7 +456,7 @@ export const pizzeria_antonio_CONFIG: RestaurantConfig = {
 
 // Current active configuration - change this to switch restaurants
 // NOTE: This is now a fallback - the actual config comes from the database
-export const RESTAURANT_CONFIG = pizzeria_antonio_CONFIG;
+export const RESTAURANT_CONFIG = ravintola_babylon_CONFIG;
 
 // Helper functions
 export const getFullAddress = (config: RestaurantConfig) => {

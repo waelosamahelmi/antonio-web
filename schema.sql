@@ -479,7 +479,7 @@ GRANT ALL ON public.users TO authenticated;
     - Add policy for authenticated admin write access
 
   3. Data
-    - Insert default Pizzeria Antonio configuration
+    - Insert default ravintola babylon configuration
 */
 
 CREATE TABLE IF NOT EXISTS restaurant_config (
@@ -541,7 +541,7 @@ CREATE TRIGGER update_restaurant_config_updated_at
   BEFORE UPDATE ON restaurant_config
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Insert default Pizzeria Antonio configuration
+-- Insert default ravintola babylon configuration
 INSERT INTO restaurant_config (
   name,
   name_en,
@@ -562,14 +562,14 @@ INSERT INTO restaurant_config (
   hero,
   is_active
 ) VALUES (
-  'Pizzeria Antonio',
-  'Pizzeria Antonio',
+  'ravintola babylon',
+  'ravintola babylon',
   'Laadukkaita aterioita Lahden sydämessä',
   'Quality meals in the heart of Lahti',
-  'Pizzeria Antoniossa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.',
-  'At Pizzeria Antonio we offer quality meals and invite you to taste our delicious food.',
+  'ravintola babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.',
+  'At ravintola babylon we offer quality meals and invite you to taste our delicious food.',
   '+35835899089',
-  'info@pizzeriaantonio.fi',
+  'info@ravintolababylon.fi',
   '{
     "street": "Rauhankatu 19 c",
     "postalCode": "15110",
@@ -665,8 +665,8 @@ INSERT INTO restaurant_config (
     "backgroundColor": "#8B4513"
   }',
   '{
-    "story": "Pizzeria Antoniossa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
-    "storyEn": "At Pizzeria Antonio we offer quality meals and invite you to taste our delicious food.",
+    "story": "ravintola babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
+    "storyEn": "At ravintola babylon we offer quality meals and invite you to taste our delicious food.",
     "mission": "Tarjoamme Lahdessa parhaita pizzoja, kebabeja ja muita herkullisia ruokia ystävällisessä palvelussa.",
     "missionEn": "We offer the best pizzas, kebabs and other delicious food in Lahti with friendly service.",
     "specialties": [

@@ -35,7 +35,7 @@ export function ServiceHighlights() {
     },
     {
       icon: UtensilsCrossed,
-      title: t("pizzeriassa", "Dine-in"),
+      title: t("ravintolassa", "Dine-in"),
       description: t("Nauti ateriastasi viihtyisässä ympäristössämme", "Enjoy your meal in our cozy atmosphere"),
       bgColor: '#dcfce7',
       textColor: '#16a34a',

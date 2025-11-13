@@ -62,7 +62,7 @@ After deployment:
 You should see:
 ```
 🚀 Starting application...
-🧹 Clearing old caches: ["antonio-customer-v1", "antonio-customer-v2", "antonio-customer-v3"]
+🧹 Clearing old caches: ["babylon-customer-v1", "babylon-customer-v2", "babylon-customer-v3"]
 Service Worker installing...
 ```
 

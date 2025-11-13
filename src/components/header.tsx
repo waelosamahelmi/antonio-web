@@ -48,8 +48,8 @@ export function Header({ onCartClick }: HeaderProps) {
               </div>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                  <span className="hidden sm:inline">Pizzeria Antonio</span>
-                  <span className="sm:hidden">antonio</span>
+                  <span className="hidden sm:inline">ravintola babylon</span>
+                  <span className="sm:hidden">babylon</span>
                 </h1>
               </div>
             </div>
@@ -75,7 +75,7 @@ export function Header({ onCartClick }: HeaderProps) {
                 {t("Yhteystiedot", "Contact")}
               </a>
               <a
-                href="https://admin.pizzeriaantonio.fi"
+                href="https://admin.ravintolababylon.fi"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-sm"
@@ -220,7 +220,7 @@ export function Header({ onCartClick }: HeaderProps) {
                   {t("Yhteystiedot", "Contact")}
                 </a>
                 <a
-                  href="https://admin.pizzeriaantonio.fi"
+                  href="https://admin.ravintolababylon.fi"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium py-2 text-sm border-t border-gray-200 dark:border-gray-700 pt-4 mt-2"

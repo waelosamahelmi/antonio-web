@@ -179,9 +179,9 @@ export default function Privacy() {
               <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mt-4">
                 <p>
                   <strong>Tietosuojavastaava / Data Protection Officer</strong><br />
-                  Pizzeria Antonio<br />
+                  ravintola babylon<br />
                   Rauhankatu 19 c, 15110 Lahti<br />
-                  Sähköposti: info@pizzeriaantonio.fi<br />
+                  Sähköposti: info@ravintolababylon.fi<br />
                   Puhelin: +35835899089
                 </p>
               </div>

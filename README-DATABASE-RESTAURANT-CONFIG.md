@@ -80,7 +80,7 @@ If the database is unavailable, the system falls back to the hardcoded configura
 
 ```typescript
 // Fallback to hardcoded config if database fails
-const config = dbConfig || pizzeria_antonio_CONFIG;
+const config = dbConfig || ravintola_babylon_CONFIG;
 ```
 
 ## Switching to a New Restaurant
@@ -292,7 +292,7 @@ A restaurant admin interface can be built to manage configurations through a web
 ### For Existing Restaurants
 
 1. **Run the migration** to create the `restaurant_config` table
-2. **The default Pizzeria Antonio config** is automatically inserted
+2. **The default ravintola babylon config** is automatically inserted
 3. **No code changes needed** - the website continues working
 
 ### For New Restaurants
