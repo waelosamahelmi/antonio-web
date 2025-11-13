@@ -891,6 +891,20 @@ printer connectivity.
     const size = sizeMatch ? sizeMatch[1].trim() : 'normal';
     console.log(`🔍 Extracted size for pricing: "${size}"`);
     
+    // Check for conditional pricing information
+    const menuItem = item.menuItem || item.menuItems || item.menu_item || {};
+    const hasConditionalPricing = menuItem.hasConditionalPricing || menuItem.has_conditional_pricing || false;
+    const includedToppingsCount = menuItem.includedToppingsCount || menuItem.included_toppings_count || 0;
+    console.log(`🔍 Conditional pricing: enabled=${hasConditionalPricing}, included=${includedToppingsCount}`);
+    
+    // Legacy support: Check for "Oma valinta" pizza (product ID 93)
+    const isOmaValintaPizza = menuItem.id === 93 || item.menuItemId === 93 || item.menu_item_id === 93;
+    const legacyFreeToppings = isOmaValintaPizza && !hasConditionalPricing ? 4 : 0;
+    
+    // Determine how many free toppings
+    const freeToppingCount = hasConditionalPricing ? includedToppingsCount : legacyFreeToppings;
+    console.log(`🔍 Free topping count: ${freeToppingCount} (conditional: ${hasConditionalPricing}, legacy: ${legacyFreeToppings})`);
+    
     // Check for toppings in special instructions
     if (specialInstructions) {
       const toppingsMatch = specialInstructions.match(/Toppings:\s*([^;]+)/i);
@@ -900,24 +914,34 @@ printer connectivity.
         
         const toppingItems = toppingsText.split(',').map((t: string) => t.trim());
         
-        toppingItems.forEach((topping: string) => {
+        toppingItems.forEach((topping: string, index: number) => {
           // Extract topping name and original price
           const priceMatch = topping.match(/(.+?)\s*\(\+€([\d.]+)\)/);
           if (priceMatch) {
             const toppingName = priceMatch[1].trim();
             const originalPrice = parseFloat(priceMatch[2]);
             
-            // Apply size-based pricing rules
-            let adjustedPrice = originalPrice;
-            if (size === "perhe") {
-              adjustedPrice = originalPrice * 2; // Double price for family size
-            } else if (size === "large" && Math.abs(originalPrice - 1.00) < 0.01) {
-              adjustedPrice = 2.00; // €1.00 toppings become €2.00 for large
-            }
+            // Check if this topping is free based on conditional pricing
+            const isFree = freeToppingCount > 0 && index < freeToppingCount;
             
-            const displayText = `${toppingName} (+€${adjustedPrice.toFixed(2)})`;
-            console.log(`✅ Adjusted topping price: "${toppingName}" ${originalPrice} → ${adjustedPrice} (size: ${size})`);
-            toppings.push(displayText);
+            if (isFree) {
+              // Show as free topping
+              const displayText = `${toppingName} (ILMAINEN)`;
+              console.log(`✅ Free topping: "${toppingName}" (index ${index} < ${freeToppingCount})`);
+              toppings.push(displayText);
+            } else {
+              // Apply size-based pricing rules for paid toppings
+              let adjustedPrice = originalPrice;
+              if (size === "perhe") {
+                adjustedPrice = originalPrice * 2; // Double price for family size
+              } else if (size === "large" && Math.abs(originalPrice - 1.00) < 0.01) {
+                adjustedPrice = 2.00; // €1.00 toppings become €2.00 for large
+              }
+              
+              const displayText = `${toppingName} (+€${adjustedPrice.toFixed(2)})`;
+              console.log(`✅ Paid topping: "${toppingName}" ${originalPrice} → ${adjustedPrice} (size: ${size})`);
+              toppings.push(displayText);
+            }
           } else {
             // No price information, keep as-is
             toppings.push(topping);

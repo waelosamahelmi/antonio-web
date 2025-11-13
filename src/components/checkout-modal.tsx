@@ -282,23 +282,27 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <Label className={`flex items-center space-x-3 p-4 sm:p-3 border-2 rounded-lg transition-colors touch-manipulation ${
+                  formData.orderType === "delivery" 
+                    ? "border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-600" 
+                    : ""
+                } ${
                   isDeliveryOpen 
-                    ? "border-gray-200 cursor-pointer hover:border-red-600 active:bg-red-50" 
-                    : "border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed"
+                    ? "border-gray-200 dark:border-gray-700 cursor-pointer hover:border-green-500 dark:hover:border-green-600 active:bg-green-50 dark:active:bg-green-950" 
+                    : "border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 opacity-60 cursor-not-allowed"
                 }`}>
                   <RadioGroupItem 
                     value="delivery" 
-                    className="text-red-600 w-5 h-5" 
+                    className="text-green-600 dark:text-green-500 w-5 h-5" 
                     disabled={!isDeliveryOpen}
                   />
                   <div className="flex items-center space-x-2">
-                    <Bike className={`w-6 h-6 sm:w-5 sm:h-5 ${isDeliveryOpen ? "text-red-600" : "text-gray-400"}`} />
+                    <Bike className={`w-6 h-6 sm:w-5 sm:h-5 ${isDeliveryOpen ? "text-green-600 dark:text-green-500" : "text-gray-400 dark:text-gray-600"}`} />
                     <div className="flex flex-col">
-                      <span className="font-medium text-base sm:text-sm">
+                      <span className="font-medium text-base sm:text-sm dark:text-gray-100">
                         {t("Kotiinkuljetus", "Delivery")}
                       </span>
                       {!isDeliveryOpen && (
-                        <span className="text-xs text-red-500">
+                        <span className="text-xs text-red-500 dark:text-red-400">
                           {t("Suljettu", "Closed")}
                         </span>
                       )}
@@ -306,21 +310,25 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
                   </div>
                 </Label>
                 <Label className={`flex items-center space-x-3 p-4 sm:p-3 border-2 rounded-lg transition-colors touch-manipulation ${
+                  formData.orderType === "pickup" 
+                    ? "border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-600" 
+                    : ""
+                } ${
                   isPickupOpen 
-                    ? "border-gray-200 cursor-pointer hover:border-red-600 active:bg-amber-50" 
-                    : "border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed"
+                    ? "border-gray-200 dark:border-gray-700 cursor-pointer hover:border-green-500 dark:hover:border-green-600 active:bg-green-50 dark:active:bg-green-950" 
+                    : "border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 opacity-60 cursor-not-allowed"
                 }`}>
                   <RadioGroupItem 
                     value="pickup" 
-                    className="text-red-600 w-5 h-5" 
+                    className="text-green-600 dark:text-green-500 w-5 h-5" 
                     disabled={!isPickupOpen}
                   />
                   <div className="flex items-center space-x-2">
-                    <ShoppingBag className={`w-6 h-6 sm:w-5 sm:h-5 ${isPickupOpen ? "text-amber-600" : "text-gray-400"}`} />
+                    <ShoppingBag className={`w-6 h-6 sm:w-5 sm:h-5 ${isPickupOpen ? "text-green-600 dark:text-green-500" : "text-gray-400 dark:text-gray-600"}`} />
                     <div className="flex flex-col">
-                      <span className="font-medium text-base sm:text-sm">{t("Nouto", "Pickup")}</span>
+                      <span className="font-medium text-base sm:text-sm dark:text-gray-100">{t("Nouto", "Pickup")}</span>
                       {!isPickupOpen && (
-                        <span className="text-xs text-red-500">
+                        <span className="text-xs text-red-500 dark:text-red-400">
                           {t("Suljettu", "Closed")}
                         </span>
                       )}
