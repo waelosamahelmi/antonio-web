@@ -19,9 +19,10 @@ import { useRestaurant } from "@/lib/restaurant-context";
 interface DeliveryMapProps {
   onDeliveryCalculated: (fee: number, distance: number, address: string) => void;
   initialAddress?: string;
+  branchLocation?: { lat: number; lng: number; name: string; address: string } | null;
 }
 
-export function DeliveryMap({ onDeliveryCalculated, initialAddress = "" }: DeliveryMapProps) {
+export function DeliveryMap({ onDeliveryCalculated, initialAddress = "", branchLocation = null }: DeliveryMapProps) {
   const { t, language } = useLanguage();
   const { config } = useRestaurant();
   const mapRef = useRef<HTMLDivElement>(null);
@@ -47,7 +48,10 @@ export function DeliveryMap({ onDeliveryCalculated, initialAddress = "" }: Deliv
     if (!mapRef.current || mapInitialized) return;
     if (!config) return; // Wait for config to load
 
-    const RESTAURANT_LOCATION = getRestaurantLocation(config);
+    // Use branch location if provided, otherwise use default restaurant location
+    const RESTAURANT_LOCATION = branchLocation 
+      ? { lat: branchLocation.lat, lng: branchLocation.lng }
+      : getRestaurantLocation(config);
     const mapContainer = mapRef.current;
     const mapId = `map-${Date.now()}`;
     
@@ -77,8 +81,11 @@ export function DeliveryMap({ onDeliveryCalculated, initialAddress = "" }: Deliv
       }).addTo(map);
       
       // Add restaurant marker
+      const branchName = branchLocation?.name || t("ravintola babylon", "ravintola babylon");
+      const branchAddress = branchLocation?.address || "Pasintie 2, 45410 Lahti";
+      
       const restaurantIcon = L.divIcon({
-        html: `<div style="background: #ef4444; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3); white-space: nowrap;">🍕 ${t("ravintola babylon", "ravintola babylon")}</div>`,
+        html: `<div style="background: #ef4444; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3); white-space: nowrap;">🍕 ${branchName}</div>`,
         className: 'custom-marker',
         iconSize: [120, 30],
         iconAnchor: [60, 30]
@@ -88,9 +95,8 @@ export function DeliveryMap({ onDeliveryCalculated, initialAddress = "" }: Deliv
         .addTo(map)
         .bindPopup(`
           <div style="text-align: center;">
-            <strong>${t("ravintola babylon", "ravintola babylon")}</strong><br>
-            <small>Pasintie 2, 45410 Lahti</small><br>
-            <small>+358 41 3152619</small>
+            <strong>${branchName}</strong><br>
+            <small>${branchAddress}</small>
           </div>
         `);
       
@@ -142,7 +148,11 @@ export function DeliveryMap({ onDeliveryCalculated, initialAddress = "" }: Deliv
   const handleCalculateDeliveryForCoordinates = async (lat: number, lng: number, addressName: string) => {
     if (!config) return;
     
-    const RESTAURANT_LOCATION = getRestaurantLocation(config);
+    // Use branch location if provided, otherwise use default restaurant location
+    const RESTAURANT_LOCATION = branchLocation 
+      ? { lat: branchLocation.lat, lng: branchLocation.lng }
+      : getRestaurantLocation(config);
+    
     setIsLoading(true);
     setError("");
     setShowSuggestions(false);
@@ -154,10 +164,9 @@ export function DeliveryMap({ onDeliveryCalculated, initialAddress = "" }: Deliv
         return;
       }
 
-      const restaurantLocation = getRestaurantLocation(config);
       const distance = calculateDistance(
-        restaurantLocation.lat,
-        restaurantLocation.lng,
+        RESTAURANT_LOCATION.lat,
+        RESTAURANT_LOCATION.lng,
         lat,
         lng
       );

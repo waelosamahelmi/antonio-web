@@ -44,6 +44,19 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
     enabled: isOpen && items.some(item => item.toppings && item.toppings.length > 0)
   });
 
+  // Fetch branches for branch selection
+  const { data: branches = [] } = useQuery({
+    queryKey: ['/api/branches'],
+    enabled: isOpen,
+    queryFn: async () => {
+      const response = await fetch('/api/branches');
+      if (!response.ok) throw new Error('Failed to fetch branches');
+      return response.json();
+    },
+  });
+
+  const activeBranches = branches?.filter((branch: any) => branch.isActive) || [];
+
   const getToppingName = (toppingId: string) => {
     const toppings = Array.isArray(allToppings) ? allToppings : [];
     const topping = toppings.find((t: any) => t.id.toString() === toppingId);
@@ -59,6 +72,7 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
     postalCode: "",
     city: "",
     orderType: "delivery" as "delivery" | "pickup",
+    branchId: null as number | null,
     paymentMethod: "cash",
     specialInstructions: "",
   });
@@ -145,6 +159,16 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
       toast({
         title: t("Virhe", "Error"),
         description: t("Lisää tuotteita koriin ensin", "Add items to cart first"),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate branch selection if branches are available
+    if (activeBranches.length > 0 && !formData.branchId) {
+      toast({
+        title: t("Virhe", "Error"),
+        description: t("Valitse toimipiste", "Please select a branch"),
         variant: "destructive",
       });
       return;
@@ -339,6 +363,45 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
             </RadioGroup>
           </div>
 
+          {/* Branch Selection - shown for both delivery and pickup */}
+          {activeBranches.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="branchId" className="text-base sm:text-sm">
+                {formData.orderType === "delivery" 
+                  ? t("Lähin toimipiste", "Nearest Branch")
+                  : t("Noutopiste", "Pickup Location")
+                } *
+              </Label>
+              <select
+                id="branchId"
+                required
+                value={formData.branchId || ""}
+                onChange={(e) => {
+                  const value = e.target.value ? parseInt(e.target.value) : null;
+                  setFormData(prev => ({ ...prev, branchId: value }));
+                }}
+                className="w-full h-12 sm:h-10 px-3 border border-gray-200 dark:border-gray-700 rounded-md bg-white dark:bg-gray-950 text-base"
+              >
+                <option value="">
+                  {t("Valitse toimipiste", "Select branch")}
+                </option>
+                {activeBranches.map((branch: any) => (
+                  <option key={branch.id} value={branch.id}>
+                    {language === "fi" ? branch.name : branch.nameEn} - {branch.address}, {branch.city}
+                  </option>
+                ))}
+              </select>
+              {formData.orderType === "delivery" && (
+                <p className="text-xs text-muted-foreground">
+                  {t(
+                    "Toimitusmaksu lasketaan valitun toimipisteen etäisyyden perusteella",
+                    "Delivery fee is calculated based on distance from selected branch"
+                  )}
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Customer Information */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -388,6 +451,19 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
                 onAddressChange={handleAddressChange}
                 onDeliveryCalculated={handleDeliveryCalculated}
                 initialAddress={formData.deliveryAddress}
+                branchLocation={
+                  formData.branchId 
+                    ? (() => {
+                        const branch = activeBranches.find((b: any) => b.id === formData.branchId);
+                        return branch ? {
+                          lat: parseFloat(branch.latitude),
+                          lng: parseFloat(branch.longitude),
+                          name: language === "fi" ? branch.name : branch.nameEn,
+                          address: `${branch.address}, ${branch.city}`
+                        } : null;
+                      })()
+                    : null
+                }
               />
 
               {/* Delivery Summary */}

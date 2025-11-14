@@ -34,6 +34,7 @@ interface StructuredAddressInputProps {
   onAddressChange: (addressData: AddressData) => void;
   onDeliveryCalculated: (fee: number, distance: number, fullAddress: string) => void;
   initialAddress?: string;
+  branchLocation?: { lat: number; lng: number; name: string; address: string } | null;
 }
 
 interface AddressSuggestion {
@@ -62,7 +63,8 @@ interface AddressSuggestion {
 export function StructuredAddressInput({ 
   onAddressChange, 
   onDeliveryCalculated,
-  initialAddress = ""
+  initialAddress = "",
+  branchLocation = null
 }: StructuredAddressInputProps) {
   const { language, t } = useLanguage();
   const { config } = useRestaurant();
@@ -120,7 +122,12 @@ export function StructuredAddressInput({
   // Calculate delivery when all address fields are complete (debounced)
   const handleCalculateDelivery = useCallback(async (fullAddress?: string, lat?: number, lng?: number) => {
     if (!config) return;
-    const RESTAURANT_LOCATION = getRestaurantLocation(config);
+    
+    // Use branch location if provided, otherwise use default restaurant location
+    const RESTAURANT_LOCATION = branchLocation 
+      ? { lat: branchLocation.lat, lng: branchLocation.lng }
+      : getRestaurantLocation(config);
+    
     const addressToUse = fullAddress || addressData.fullAddress;
     
     // More lenient validation - only require street address OR city

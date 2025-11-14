@@ -261,27 +261,31 @@ ALTER TABLE public.toppings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.session ENABLE ROW LEVEL SECURITY;
 
 -- Helper function to check if user is authenticated admin
-CREATE OR REPLACE FUNCTION auth.is_admin()
+CREATE OR REPLACE FUNCTION public.is_admin()
 RETURNS boolean AS $$
 BEGIN
   RETURN EXISTS (
     SELECT 1 FROM public.users 
-    WHERE email = auth.email() 
+    WHERE email = current_setting('request.jwt.claims', true)::json->>'email'
     AND role = 'admin' 
     AND is_active = true
   );
+EXCEPTION WHEN OTHERS THEN
+  RETURN false;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Helper function to get current user ID
-CREATE OR REPLACE FUNCTION auth.current_user_id()
+CREATE OR REPLACE FUNCTION public.current_user_id()
 RETURNS integer AS $$
 BEGIN
   RETURN (
     SELECT id FROM public.users 
-    WHERE email = auth.email() 
+    WHERE email = current_setting('request.jwt.claims', true)::json->>'email'
     AND is_active = true
   );
+EXCEPTION WHEN OTHERS THEN
+  RETURN NULL;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -291,11 +295,11 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Users can only be managed by admins
 CREATE POLICY "Admin can manage all users" ON public.users
-  FOR ALL USING (auth.is_admin());
+  FOR ALL USING (public.is_admin());
 
 -- Allow users to view their own profile
 CREATE POLICY "Users can view own profile" ON public.users
-  FOR SELECT USING (auth.email() = email);
+  FOR SELECT USING (current_setting('request.jwt.claims', true)::json->>'email' = email);
 
 -- ==========================================
 -- RLS POLICIES FOR CATEGORIES TABLE
@@ -307,7 +311,7 @@ CREATE POLICY "Anyone can view active categories" ON public.categories
 
 -- Only admins can manage categories
 CREATE POLICY "Admin can manage categories" ON public.categories
-  FOR ALL USING (auth.is_admin());
+  FOR ALL USING (public.is_admin());
 
 -- ==========================================
 -- RLS POLICIES FOR MENU_ITEMS TABLE
@@ -319,7 +323,7 @@ CREATE POLICY "Anyone can view available menu items" ON public.menu_items
 
 -- Only admins can manage menu items
 CREATE POLICY "Admin can manage menu items" ON public.menu_items
-  FOR ALL USING (auth.is_admin());
+  FOR ALL USING (public.is_admin());
 
 -- ==========================================
 -- RLS POLICIES FOR TOPPINGS TABLE
@@ -331,7 +335,7 @@ CREATE POLICY "Anyone can view active toppings" ON public.toppings
 
 -- Only admins can manage toppings
 CREATE POLICY "Admin can manage toppings" ON public.toppings
-  FOR ALL USING (auth.is_admin());
+  FOR ALL USING (public.is_admin());
 
 -- ==========================================
 -- RLS POLICIES FOR ORDERS TABLE
@@ -350,12 +354,12 @@ CREATE POLICY "Customers can view own orders" ON public.orders
 
 -- Admins can view and manage all orders
 CREATE POLICY "Admin can manage all orders" ON public.orders
-  FOR ALL USING (auth.is_admin());
+  FOR ALL USING (public.is_admin());
 
 -- Allow updates for order status changes (with restrictions)
 CREATE POLICY "Limited order updates" ON public.orders
   FOR UPDATE USING (
-    auth.is_admin() OR 
+    public.is_admin() OR 
     (status IN ('pending', 'confirmed') AND customer_phone = current_setting('request.header.customer-phone', true))
   );
 
@@ -382,7 +386,7 @@ CREATE POLICY "Customers can view own order items" ON public.order_items
 
 -- Admins can manage all order items
 CREATE POLICY "Admin can manage all order items" ON public.order_items
-  FOR ALL USING (auth.is_admin());
+  FOR ALL USING (public.is_admin());
 
 -- ==========================================
 -- RLS POLICIES FOR RESTAURANT_SETTINGS TABLE
@@ -394,7 +398,7 @@ CREATE POLICY "Anyone can view restaurant settings" ON public.restaurant_setting
 
 -- Only admins can modify restaurant settings
 CREATE POLICY "Admin can manage restaurant settings" ON public.restaurant_settings
-  FOR ALL USING (auth.is_admin());
+  FOR ALL USING (public.is_admin());
 
 -- ==========================================
 -- RLS POLICIES FOR PRINTERS TABLE
@@ -402,7 +406,7 @@ CREATE POLICY "Admin can manage restaurant settings" ON public.restaurant_settin
 
 -- Only admins can manage printers
 CREATE POLICY "Admin can manage printers" ON public.printers
-  FOR ALL USING (auth.is_admin());
+  FOR ALL USING (public.is_admin());
 
 -- ==========================================
 -- RLS POLICIES FOR SESSION TABLE
@@ -412,7 +416,7 @@ CREATE POLICY "Admin can manage printers" ON public.printers
 CREATE POLICY "Users can manage own sessions" ON public.session
   FOR ALL USING (
     sid = current_setting('request.header.session-id', true) OR
-    auth.is_admin()
+    public.is_admin()
   );
 
 -- ==========================================
@@ -518,7 +522,7 @@ CREATE POLICY "Anyone can read active restaurant config"
 CREATE POLICY "Admin can manage restaurant config"
   ON restaurant_config
   FOR ALL
-  USING (auth.is_admin());
+  USING (public.is_admin());
 
 -- Ensure only one active config at a time
 CREATE OR REPLACE FUNCTION ensure_single_active_config()

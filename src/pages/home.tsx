@@ -14,6 +14,7 @@ import { HeroVideo } from "@/components/hero-video";
 import { RestaurantStatusHeader } from "@/components/restaurant-status-header";
 import { ServiceHoursSection } from "@/components/service-hours-section";
 import { AboutSection } from "@/components/about-section";
+import { BranchesSection } from "@/components/branches-section";
 import { Footer } from "@/components/footer";
 import { 
   UtensilsCrossed, 
@@ -212,6 +213,9 @@ export default function Home() {
 
       {/* About Section */}
       <AboutSection />
+
+      {/* Branches Section */}
+      <BranchesSection />
 
       {/* Footer */}
       <Footer />
