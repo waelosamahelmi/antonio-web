@@ -1,6 +1,6 @@
 import { useLanguage } from "@/lib/language-context";
 import { useRestaurant } from "@/lib/restaurant-context";
-import { UtensilsCrossed, Phone, Mail, MapPin } from "lucide-react";
+import { UtensilsCrossed, Phone, Mail, MapPin, Heart, Facebook, Instagram } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { Link } from "wouter";
 
@@ -11,96 +11,168 @@ export function Footer() {
   const IconComponent = (LucideIcons as any)[config.logo.icon] || LucideIcons.UtensilsCrossed;
 
   return (
-    <footer className="bg-stone-900 text-white py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-2">
-            <div className="flex items-center space-x-3 mb-4">
+    <footer className="bg-gradient-to-br from-stone-900 via-stone-800 to-stone-900 text-white relative overflow-hidden">
+      {/* Animated background pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-red-500 to-orange-500 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-orange-500 to-yellow-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+          {/* About Section */}
+          <div className="space-y-6">
+            <div className="flex items-center space-x-3">
               <div 
-                className="w-10 h-10 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: config.logo.backgroundColor }}
+                className="bg-gradient-to-br from-red-500 to-orange-500 p-3 rounded-2xl shadow-lg"
               >
-                <IconComponent className="text-white text-lg" />
+                <IconComponent className="w-7 h-7 text-white" />
               </div>
-              <div>
-                <h3 className="text-xl font-bold">{config.name}</h3>
-                <p className="text-gray-400 text-sm">
-                  {t(`${config.address.city}, Suomi`, `${config.address.city}, Finland`)}
-                </p>
-              </div>
+              <h3 className="text-2xl font-bold">{config.name}</h3>
             </div>
-            <p className="text-gray-400 mb-4">
+            <p className="text-gray-400 leading-relaxed">
               {t(config.about.story, config.about.storyEn)}
             </p>
+            {/* Social Links */}
+            <div className="flex space-x-3">
+              {config.contact?.social?.facebook && (
+                <a
+                  href={config.contact.social.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/10 backdrop-blur-sm p-3 rounded-xl hover:bg-gradient-to-r hover:from-red-500 hover:to-orange-500 transition-all hover:scale-110 group shadow-lg"
+                >
+                  <Facebook className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                </a>
+              )}
+              {config.contact?.social?.instagram && (
+                <a
+                  href={config.contact.social.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/10 backdrop-blur-sm p-3 rounded-xl hover:bg-gradient-to-r hover:from-red-500 hover:to-orange-500 transition-all hover:scale-110 group shadow-lg"
+                >
+                  <Instagram className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                </a>
+              )}
+            </div>
           </div>
 
-          <div>
-            <h4 className="font-semibold mb-4">
+          {/* Quick Links */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
               {t("Pikanavigaatio", "Quick Links")}
-            </h4>
-            <ul className="space-y-2 text-gray-400">
+            </h3>
+            <ul className="space-y-3">
               <li>
-                <a href="menu" className="hover:text-white transition-colors">
+                <a href="/" className="text-gray-400 hover:text-white transition-colors flex items-center group">
+                  <div className="w-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></div>
+                  {t("Etusivu", "Home")}
+                </a>
+              </li>
+              <li>
+                <a href="/menu" className="text-gray-400 hover:text-white transition-colors flex items-center group">
+                  <div className="w-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></div>
                   Menu
                 </a>
               </li>
               <li>
-                <a href="about" className="hover:text-white transition-colors">
+                <a href="/about" className="text-gray-400 hover:text-white transition-colors flex items-center group">
+                  <div className="w-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></div>
                   {t("Meistä", "About")}
                 </a>
               </li>
               <li>
-                <a href="contact" className="hover:text-white transition-colors">
+                <a href="/contact" className="text-gray-400 hover:text-white transition-colors flex items-center group">
+                  <div className="w-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></div>
                   {t("Yhteystiedot", "Contact")}
+                </a>
+              </li>
+              <li>
+                <a href="/locations" className="text-gray-400 hover:text-white transition-colors flex items-center group">
+                  <div className="w-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></div>
+                  {t("Ruokapisteet", "Food Locations")}
                 </a>
               </li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-semibold mb-4">
+          {/* Information */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
               {t("Tietoa", "Information")}
-            </h4>
-            <ul className="space-y-2 text-gray-400">
+            </h3>
+            <ul className="space-y-3">
               <li>
-                <Link href="/terms" className="hover:text-white transition-colors">
-                  {t("Käyttöehdot", "Terms & Conditions")}
+                <Link href="/terms">
+                  <span className="text-gray-400 hover:text-white transition-colors flex items-center group">
+                    <div className="w-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></div>
+                    {t("Käyttöehdot", "Terms & Conditions")}
+                  </span>
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-white transition-colors">
-                  {t("Tietosuoja", "Privacy Policy")}
+                <Link href="/privacy">
+                  <span className="text-gray-400 hover:text-white transition-colors flex items-center group">
+                    <div className="w-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></div>
+                    {t("Tietosuoja", "Privacy Policy")}
+                  </span>
                 </Link>
               </li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-semibold mb-4">
+          {/* Contact Info */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
               {t("Yhteystiedot", "Contact Info")}
-            </h4>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li className="flex items-center space-x-2">
-                <Phone className="w-4 h-4" />
-                <span>{config.phone}</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <Mail className="w-4 h-4" />
-                <span>{config.email}</span>
-              </li>
-              <li className="flex items-center space-x-2">
-                <MapPin className="w-4 h-4" />
-                <span>{config.address.street}, {config.address.postalCode} {config.address.city}</span>
-              </li>
-            </ul>
+            </h3>
+            <div className="space-y-4">
+              <a
+                href={`tel:${config.phone}`}
+                className="flex items-start space-x-3 text-gray-400 hover:text-white transition-all group"
+              >
+                <div className="bg-white/10 backdrop-blur-sm p-2.5 rounded-xl group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all group-hover:scale-110 shadow-lg">
+                  <Phone className="w-5 h-5 flex-shrink-0 group-hover:rotate-12 transition-transform" />
+                </div>
+                <span className="pt-1">{config.phone}</span>
+              </a>
+              <a
+                href={`mailto:${config.email}`}
+                className="flex items-start space-x-3 text-gray-400 hover:text-white transition-all group"
+              >
+                <div className="bg-white/10 backdrop-blur-sm p-2.5 rounded-xl group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all group-hover:scale-110 shadow-lg">
+                  <Mail className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="pt-1 break-all">{config.email}</span>
+              </a>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${config.address.street}, ${config.address.postalCode} ${config.address.city}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start space-x-3 text-gray-400 hover:text-white transition-all group"
+              >
+                <div className="bg-white/10 backdrop-blur-sm p-2.5 rounded-xl group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all group-hover:scale-110 shadow-lg">
+                  <MapPin className="w-5 h-5 flex-shrink-0 group-hover:bounce transition-transform" />
+                </div>
+                <span className="pt-1">{config.address.street}, {config.address.postalCode} {config.address.city}</span>
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>
-            &copy; 2024 {config.name}.{" "}
-            {t("Kaikki oikeudet pidätetään.", "All rights reserved.")}
-          </p>
+        {/* Bottom Bar */}
+        <div className="mt-16 pt-8 border-t border-white/10">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <p className="text-gray-400 text-sm">
+              © {new Date().getFullYear()} {config.name}. {t("Kaikki oikeudet pidätetään.", "All rights reserved.")}
+            </p>
+            <div className="flex items-center space-x-2 text-sm text-gray-400">
+              <span>{t("Tehty", "Made with")}</span>
+              <Heart className="w-4 h-4 text-red-500 animate-pulse" />
+              <span>{t("Suomessa", "in Finland")}</span>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

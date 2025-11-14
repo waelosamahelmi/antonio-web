@@ -43,16 +43,25 @@ class RestaurantSettingsManager {
 
   private async initializeSubscription() {
     try {
-      // Fetch initial data
+      console.log('🔄 Fetching fresh restaurant settings from database...');
+      
+      // Fetch initial data with cache disabled
       const { data, error } = await supabase
         .from('restaurant_settings')
         .select('*')
         .single();
 
       if (!error && data) {
+        console.log('✅ Restaurant settings loaded:', {
+          opening_hours: data.opening_hours,
+          pickup_hours: data.pickup_hours,
+          delivery_hours: data.delivery_hours,
+          is_busy: data.is_busy,
+          is_open: data.is_open
+        });
         this.currentSettings = data;
       } else {
-        console.warn('Failed to load database settings:', error);
+        console.warn('⚠️ Failed to load database settings:', error);
       }
       
       this.isInitialized = true;
@@ -69,7 +78,7 @@ class RestaurantSettingsManager {
             table: 'restaurant_settings',
           },
           (payload) => {
-            console.log('Restaurant settings changed:', payload);
+            console.log('🔔 Restaurant settings changed:', payload);
             if (payload.new && typeof payload.new === 'object') {
               this.currentSettings = payload.new as DatabaseRestaurantSettings;
               this.notifySubscribers();
@@ -78,9 +87,30 @@ class RestaurantSettingsManager {
         )
         .subscribe();
     } catch (error) {
-      console.error('Error initializing restaurant settings subscription:', error);
+      console.error('❌ Error initializing restaurant settings subscription:', error);
       this.isInitialized = true;
       this.notifySubscribers();
+    }
+  }
+
+  // Add force refresh method
+  async forceRefresh() {
+    console.log('🔄 Force refreshing restaurant settings...');
+    try {
+      const { data, error } = await supabase
+        .from('restaurant_settings')
+        .select('*')
+        .single();
+
+      if (!error && data) {
+        console.log('✅ Force refresh successful:', data.opening_hours);
+        this.currentSettings = data;
+        this.notifySubscribers();
+      } else {
+        console.error('❌ Force refresh failed:', error);
+      }
+    } catch (error) {
+      console.error('❌ Error during force refresh:', error);
     }
   }
 
@@ -99,12 +129,23 @@ export function useRestaurantSettings() {
     const manager = RestaurantSettingsManager.getInstance();
     
     const unsubscribe = manager.subscribe((settings) => {
+      console.log('📡 Received restaurant settings update:', {
+        opening_hours: settings?.opening_hours,
+        pickup_hours: settings?.pickup_hours,
+        delivery_hours: settings?.delivery_hours
+      });
       setDbSettings(settings);
       setLoading(false);
     });
 
     return unsubscribe;
   }, []);
+
+  // Force refresh function
+  const refresh = async () => {
+    const manager = RestaurantSettingsManager.getInstance();
+    await manager.forceRefresh();
+  };
 
   // Create a config with merged hours from database
   const config = baseConfig ? {
@@ -129,7 +170,10 @@ export function useRestaurantSettings() {
 
   // Debug logging
   if (config && dbSettings) {
-    console.log('🏪 Restaurant Settings:', {
+    console.log('🏪 Restaurant Config Ready:', {
+      generalHours: config.hours.general,
+      pickupHours: config.hours.pickup,
+      deliveryHours: config.hours.delivery,
       isBusy: config.isBusy,
       dbIsBusy: dbSettings.is_busy,
       isOpen: dbSettings.is_open
@@ -143,5 +187,6 @@ export function useRestaurantSettings() {
     error,
     isOpen: dbSettings?.is_open ?? true,
     specialMessage: dbSettings?.special_message,
+    refresh, // Export refresh function
   };
 }

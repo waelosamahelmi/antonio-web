@@ -585,31 +585,31 @@ INSERT INTO restaurant_config (
   }',
   '{
     "general": {
-      "monday": {"open": "10:30", "close": "21:30", "closed": false},
-      "tuesday": {"open": "10:30", "close": "21:30", "closed": false},
-      "wednesday": {"open": "10:30", "close": "21:30", "closed": false},
-      "thursday": {"open": "10:30", "close": "21:30", "closed": false},
+      "monday": {"open": "10:30", "close": "10:29", "closed": false},
+      "tuesday": {"open": "10:30", "close": "10:29", "closed": false},
+      "wednesday": {"open": "10:30", "close": "10:29", "closed": false},
+      "thursday": {"open": "10:30", "close": "10:29", "closed": false},
       "friday": {"open": "10:30", "close": "22:00", "closed": false},
       "saturday": {"open": "10:30", "close": "05:30", "closed": false},
-      "sunday": {"open": "10:30", "close": "21:30", "closed": false}
+      "sunday": {"open": "10:30", "close": "10:29", "closed": false}
     },
     "pickup": {
-      "monday": {"open": "10:30", "close": "21:30", "closed": false},
-      "tuesday": {"open": "10:30", "close": "21:30", "closed": false},
-      "wednesday": {"open": "10:30", "close": "21:30", "closed": false},
-      "thursday": {"open": "10:30", "close": "21:30", "closed": false},
+      "monday": {"open": "10:30", "close": "10:29", "closed": false},
+      "tuesday": {"open": "10:30", "close": "10:29", "closed": false},
+      "wednesday": {"open": "10:30", "close": "10:29", "closed": false},
+      "thursday": {"open": "10:30", "close": "10:29", "closed": false},
       "friday": {"open": "10:30", "close": "22:00", "closed": false},
       "saturday": {"open": "10:30", "close": "05:30", "closed": false},
-      "sunday": {"open": "10:30", "close": "21:30", "closed": false}
+      "sunday": {"open": "10:30", "close": "10:29", "closed": false}
     },
     "delivery": {
-      "monday": {"open": "10:30", "close": "21:30", "closed": false},
-      "tuesday": {"open": "10:30", "close": "21:30", "closed": false},
-      "wednesday": {"open": "10:30", "close": "21:30", "closed": false},
-      "thursday": {"open": "10:30", "close": "21:30", "closed": false},
+      "monday": {"open": "10:30", "close": "10:29", "closed": false},
+      "tuesday": {"open": "10:30", "close": "10:29", "closed": false},
+      "wednesday": {"open": "10:30", "close": "10:29", "closed": false},
+      "thursday": {"open": "10:30", "close": "10:29", "closed": false},
       "friday": {"open": "10:30", "close": "22:00", "closed": false},
       "saturday": {"open": "10:30", "close": "05:30", "closed": false},
-      "sunday": {"open": "10:30", "close": "21:30", "closed": false}
+      "sunday": {"open": "10:30", "close": "10:29", "closed": false}
     }
   }',
   '{

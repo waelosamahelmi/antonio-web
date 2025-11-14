@@ -80,8 +80,7 @@ export function RestaurantClosedModal({ isOpen, onClose }: RestaurantClosedModal
                     {t("Nouto", "Pickup")}
                   </span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    10:30 - 21:30
-                  </span>
+                    10:30 - 10:29                  </span>
                 </div>
                 
                 <div className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-800 rounded">
@@ -89,8 +88,7 @@ export function RestaurantClosedModal({ isOpen, onClose }: RestaurantClosedModal
                     {t("Kotiinkuljetus", "Delivery")}
                   </span>
                   <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    10:30 - 21:30
-                  </span>
+                    10:30 - 10:29                  </span>
                 </div>
               </div>
             </div>

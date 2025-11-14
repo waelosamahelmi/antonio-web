@@ -202,24 +202,56 @@ export interface RestaurantConfig {
 
 // Utility functions for parsing database hours
 export function parseDatabaseHours(hoursJson: string): ParsedHours {
+  console.log('🔍 Raw database hours input:', hoursJson, 'Type:', typeof hoursJson);
+  
   try {
-    return JSON.parse(hoursJson);
+    // Try to parse as JSON first (mobile app format)
+    const parsed = JSON.parse(hoursJson);
+    console.log('✅ Parsed as JSON:', parsed);
+    
+    // Check if it's already in the correct format
+    if (parsed.monday || parsed.Monday) {
+      return {
+        monday: parsed.monday || parsed.Monday || "10:30-21:30",
+        tuesday: parsed.tuesday || parsed.Tuesday || "10:30-21:30",
+        wednesday: parsed.wednesday || parsed.Wednesday || "10:30-21:30",
+        thursday: parsed.thursday || parsed.Thursday || "10:30-21:30",
+        friday: parsed.friday || parsed.Friday || "10:30-21:30",
+        saturday: parsed.saturday || parsed.Saturday || "10:30-21:30",
+        sunday: parsed.sunday || parsed.Sunday || "10:30-21:30"
+      };
+    }
+    
+    // If it's a simple string after JSON parse (shouldn't happen but be safe)
+    return parseSimpleTimeRange(String(parsed));
   } catch (error) {
-    console.error('Failed to parse hours JSON:', error);
-    return {
-      monday: "10:30-21:30",
-      tuesday: "10:30-21:30",
-      wednesday: "10:30-21:30",
-      thursday: "10:30-21:30",
-      friday: "10:30-22:00",
-      saturday: "10:30-05:30",
-      sunday: "10:30-21:30"
-    };
+    console.log('⚠️ Not JSON, treating as simple time range:', hoursJson);
+    // Not JSON, treat as simple time range like "08:30-21:30"
+    return parseSimpleTimeRange(hoursJson);
   }
 }
 
+// Helper function to convert simple time range to ParsedHours
+function parseSimpleTimeRange(timeRange: string): ParsedHours {
+  // Simple format like "08:30-21:30" applies to all days
+  const normalizedRange = timeRange.trim();
+  console.log('📝 Using simple time range for all days:', normalizedRange);
+  
+  return {
+    monday: normalizedRange,
+    tuesday: normalizedRange,
+    wednesday: normalizedRange,
+    thursday: normalizedRange,
+    friday: normalizedRange,
+    saturday: normalizedRange,
+    sunday: normalizedRange
+  };
+}
+
 export function convertDatabaseHoursToWeekSchedule(hoursJson: string): WeekSchedule {
+  console.log('🔄 Converting database hours:', hoursJson);
   const parsedHours = parseDatabaseHours(hoursJson);
+  console.log('📋 Parsed hours:', parsedHours);
   const schedule: WeekSchedule = {} as WeekSchedule;
   
   Object.entries(parsedHours).forEach(([day, timeRange]) => {
@@ -229,12 +261,13 @@ export function convertDatabaseHoursToWeekSchedule(hoursJson: string): WeekSched
       const [open, close] = timeRange.split('-');
       schedule[day as keyof WeekSchedule] = { 
         open: open || "10:30", 
-        close: close || "21:30", 
+        close: close || "10:29", 
         closed: false 
       };
     }
   });
   
+  console.log('✅ Final schedule:', schedule);
   return schedule;
 }
 
@@ -292,31 +325,31 @@ export const ravintola_babylon_CONFIG: RestaurantConfig = {
   
   hours: {
     general: {
-      monday: { open: "10:30", close: "21:30", closed: false },
-      tuesday: { open: "10:30", close: "21:30", closed: false },
-      wednesday: { open: "10:30", close: "21:30", closed: false },
-      thursday: { open: "10:30", close: "21:30", closed: false },
+      monday: { open: "10:30", close: "10:29", closed: false },
+      tuesday: { open: "10:30", close: "10:29", closed: false },
+      wednesday: { open: "10:30", close: "10:29", closed: false },
+      thursday: { open: "10:30", close: "10:29", closed: false },
       friday: { open: "10:30", close: "22:00", closed: false },
       saturday: { open: "10:30", close: "05:30", closed: false },
-      sunday: { open: "10:30", close: "21:30", closed: false },
+      sunday: { open: "10:30", close: "10:29", closed: false },
     },
     pickup: {
-      monday: { open: "10:30", close: "21:30", closed: false },
-      tuesday: { open: "10:30", close: "21:30", closed: false },
-      wednesday: { open: "10:30", close: "21:30", closed: false },
-      thursday: { open: "10:30", close: "21:30", closed: false },
+      monday: { open: "10:30", close: "10:29", closed: false },
+      tuesday: { open: "10:30", close: "10:29", closed: false },
+      wednesday: { open: "10:30", close: "10:29", closed: false },
+      thursday: { open: "10:30", close: "10:29", closed: false },
       friday: { open: "10:30", close: "22:00", closed: false },
       saturday: { open: "10:30", close: "05:30", closed: false },
-      sunday: { open: "10:30", close: "21:30", closed: false },
+      sunday: { open: "10:30", close: "10:29", closed: false },
     },
     delivery: {
-      monday: { open: "10:30", close: "21:30", closed: false },
-      tuesday: { open: "10:30", close: "21:30", closed: false },
-      wednesday: { open: "10:30", close: "21:30", closed: false },
-      thursday: { open: "10:30", close: "21:30", closed: false },
+      monday: { open: "10:30", close: "10:29", closed: false },
+      tuesday: { open: "10:30", close: "10:29", closed: false },
+      wednesday: { open: "10:30", close: "10:29", closed: false },
+      thursday: { open: "10:30", close: "10:29", closed: false },
       friday: { open: "10:30", close: "22:00", closed: false },
       saturday: { open: "10:30", close: "05:30", closed: false },
-      sunday: { open: "10:30", close: "21:30", closed: false },
+      sunday: { open: "10:30", close: "10:29", closed: false },
     },
   },
   
@@ -399,7 +432,7 @@ export const ravintola_babylon_CONFIG: RestaurantConfig = {
   
   logo: {
     icon: "Pizza",
-    imageUrl: "https://foozu3.fi/pizzaadmin/web_admin_common/foodzone//logo/8minqduoo4o4c8kwgw.png",
+    imageUrl: "",
     showText: true,
     backgroundColor: "#8B4513",
   },

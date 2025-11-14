@@ -20,49 +20,52 @@ export function AboutSection() {
   const { config } = useRestaurant();
 
   return (
-    <section className="py-16 bg-white dark:bg-stone-800">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Main About Content */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
-            {t(`Meistä ${config.name}`, `About ${config.nameEn}`)}
-          </h2>
-          <div className="max-w-4xl mx-auto space-y-6 text-lg text-gray-700 dark:text-gray-300">
-            <p>
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-stone-900 dark:to-stone-800 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
+      
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
+        {/* Content */}
+        <div className="text-center mb-16">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
               {t(config.about.story, config.about.storyEn)}
             </p>
-            <p className="text-xl font-semibold" style={{ color: config.theme.primary }}>
-              {config.services.hasDelivery && t("Nopea ja luotettava toimituspalvelu!", "Fast and reliable delivery service!")}
-            </p>
-            <p>
+            <div className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-2xl shadow-xl">
+              <Truck className="w-6 h-6" />
+              <span className="text-lg font-bold">
+                {config.services.hasDelivery && t("Nopea ja luotettava toimituspalvelu!", "Fast and reliable delivery service!")}
+              </span>
+            </div>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
               {t(config.about.mission, config.about.missionEn)}
             </p>
           </div>
         </div>
 
-        {/* Our Specialties */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        {/* Specialties Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {config.about.specialties.map((specialty, index) => {
             const IconComponent = (LucideIcons as any)[specialty.icon] || LucideIcons.Star;
-            const colors = [config.theme.primary, config.theme.secondary, config.theme.accent, config.theme.success];
-            const color = colors[index % colors.length];
+            const gradients = [
+              'from-red-500 to-orange-600',
+              'from-blue-500 to-cyan-600',
+              'from-purple-500 to-pink-600',
+              'from-green-500 to-emerald-600'
+            ];
             
             return (
-              <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
+              <Card key={index} className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white dark:bg-stone-800 overflow-hidden relative">
+                <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${gradients[index % gradients.length]}`}></div>
+                <CardContent className="p-6 text-center">
                   <div 
-                    className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-                    style={{ 
-                      backgroundColor: `${color}20`,
-                      color: color 
-                    }}
+                    className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${gradients[index % gradients.length]} flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all`}
                   >
-                    <IconComponent className="w-8 h-8" />
+                    <IconComponent className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="font-semibold mb-2">
+                  <h3 className="text-xl font-black mb-2 text-gray-900 dark:text-white">
                     {t(specialty.title, specialty.titleEn)}
                   </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                     {t(specialty.description, specialty.descriptionEn)}
                   </p>
                 </CardContent>
@@ -71,129 +74,148 @@ export function AboutSection() {
           })}
         </div>
 
-        {/* Mission Statement */}
-        <div 
-          className="rounded-lg p-8 mb-12"
-          style={{ 
-            background: `linear-gradient(to right, ${config.theme.primary}10, ${config.theme.secondary}10)` 
-          }}
-        >
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              {t("Tavoitteemme", "Our Goal")}
-            </h3>
-            <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-              {t(config.about.mission, config.about.missionEn)}
-            </p>
-            <div className="mt-6">
-              <Badge variant="outline" className="text-lg px-6 py-2">
-                {t("Pizza, Hampurilaiset, Kebab ja paljon muuta", "Pizza, Burgers, Kebab and much more")}
-              </Badge>
-            </div>
-          </div>
-        </div>
-
-        {/* Delivery Information */}
+        {/* Info Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <Truck className="w-6 h-6 text-blue-600 mr-3" />
-                <h3 className="text-xl font-semibold">
-                  {t(`Ruoka toimitus ${config.address.city}`, `Food Delivery ${config.address.city}`)}
+          {/* Why Choose Us Card */}
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 overflow-hidden">
+            <CardContent className="p-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Star className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white">
+                  {t("Miksi valita meidät?", "Why Choose Us?")}
                 </h3>
               </div>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                {t(
-                  "Etsitkö ruokatoimitusta lähistöltäsi? Kaikilla ei ole taitoa tai aikaa valmistaa maukasta ruokaa.",
-                  "Looking for food delivery nearby? Not everyone has the skill or time to prepare delicious food."
-                )}
-              </p>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                {t(`Kun haluat kuninkaallista kohtelua, on ${config.name} täydellinen vaihtoehto.`, `When you want royal treatment, ${config.nameEn} is the perfect choice.`)}
-              </p>
-              <p className="font-medium text-gray-800 dark:text-gray-200">
-                {t(
-                  'Valitse vain "Toimitus" kassalla, ja ruoka toimitetaan kotiovellesi.',
-                  'Just select "Delivery" at checkout, and food will be delivered to your door.'
-                )}
-              </p>
               
-              <div className="mt-6 space-y-2">
-                <h4 className="font-semibold text-gray-800 dark:text-gray-200">
-                  {t("Toimituskulut", "Delivery Fees")}
-                </h4>
-                <div className="space-y-1 text-sm">
-                  {config.delivery.zones.map((zone, index) => (
-                    <div key={index} className="flex justify-between">
-                      <span>
-                        {index === 0 
-                          ? t(`Kuljetusalue 0 - ${zone.maxDistance}km`, `Delivery area 0 - ${zone.maxDistance}km`)
-                          : t(`Kuljetusalue yli ${config.delivery.zones[index-1].maxDistance}km`, `Delivery area over ${config.delivery.zones[index-1].maxDistance}km`)
-                        }
-                      </span>
-                      <span className="font-medium">
-                        {zone.fee.toFixed(2)} €
-                        {zone.minimumOrder && ` (${t("Min.", "Min.")} ${zone.minimumOrder.toFixed(2)} €)`}
-                      </span>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl group hover:shadow-lg transition-all">
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <ChefHat className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-gray-900 dark:text-white mb-1">
+                      {t("Ammattitaitoiset kokit", "Professional Chefs")}
                     </div>
-                  ))}
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {t("Kokeneet kokit valmistavat jokaisen annoksen rakkaudella", "Experienced chefs prepare every dish with love")}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl group hover:shadow-lg transition-all">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Truck className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-gray-900 dark:text-white mb-1">
+                      {t("Nopea toimitus", "Fast Delivery")}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {t("Tuoretta ruokaa ovellesi nopeasti ja luotettavasti", "Fresh food to your door quickly and reliably")}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl group hover:shadow-lg transition-all">
+                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Heart className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-gray-900 dark:text-white mb-1">
+                      {t("Tuoreet raaka-aineet", "Fresh Ingredients")}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {t("Käytämme vain laadukkaita ja tuoreita raaka-aineita", "We use only quality and fresh ingredients")}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl group hover:shadow-lg transition-all">
+                  <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Star className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-gray-900 dark:text-white mb-1">
+                      {t("Erinomainen asiakaspalvelu", "Excellent Customer Service")}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      {t("Ystävällinen ja avulias henkilökunta palveluksessasi", "Friendly and helpful staff at your service")}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 p-6 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl shadow-lg text-white">
+                <div className="text-center">
+                  <div className="text-4xl font-black mb-2">500+</div>
+                  <div className="text-sm font-medium opacity-90">
+                    {t("Tyytyväistä asiakasta", "Happy Customers")}
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <MapPin className="w-6 h-6 text-red-600 mr-3" />
-                <h3 className="text-xl font-semibold">
-                  {t("Yhteydenotto", "Contact Information")}
+          {/* Contact Info Card */}
+          <Card className="border-0 shadow-xl bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950 overflow-hidden">
+            <CardContent className="p-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <MapPin className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white">
+                  {t("Yhteystiedot", "Contact Info")}
                 </h3>
               </div>
               
               <div className="space-y-4">
-                <div className="flex items-start space-x-3">
-                  <MapPin className="w-5 h-5 text-gray-500 mt-1" />
+                <div className="flex items-start gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
+                  <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-5 h-5 text-red-600" />
+                  </div>
                   <div>
-                    <p className="font-medium">{config.address.street}</p>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {config.address.postalCode} {config.address.city}, {config.address.country}
-                    </p>
+                    <div className="font-bold text-gray-900 dark:text-white mb-1">{config.address.street}</div>
+                    <div className="text-gray-600 dark:text-gray-400">
+                      {config.address.postalCode} {config.address.city}
+                    </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center space-x-3">
-                  <Phone className="w-5 h-5 text-gray-500" />
-                  <a href={`tel:${config.phone}`} className="font-medium text-blue-600 hover:underline">
+                <div className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
+                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-5 h-5 text-green-600" />
+                  </div>
+                  <a href={`tel:${config.phone}`} className="text-lg font-bold text-gray-900 dark:text-white hover:text-red-600 transition-colors">
                     {config.phone}
                   </a>
                 </div>
                 
                 {config.facebook && (
-                  <div className="flex items-center space-x-3">
-                    <Facebook className="w-5 h-5 text-gray-500" />
+                  <div className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Facebook className="w-5 h-5 text-blue-600" />
+                    </div>
                     <a 
                       href={config.facebook} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="font-medium text-blue-600 hover:underline"
+                      className="font-medium text-gray-900 dark:text-white hover:text-blue-600 transition-colors"
                     >
-                      Facebook - {config.name}
+                      {t("Seuraa meitä Facebookissa", "Follow us on Facebook")}
                     </a>
                   </div>
                 )}
               </div>
 
-              <div className="mt-6 p-4 bg-gray-50 dark:bg-stone-700 rounded-lg">
-                <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+              <div className="mt-6 p-6 bg-gradient-to-r from-orange-600 to-red-600 rounded-xl shadow-lg text-white">
+                <h4 className="font-black text-lg mb-3 flex items-center gap-2">
+                  <Clock className="w-5 h-5" />
                   {t("Aukioloajat", "Opening Hours")}
                 </h4>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span>{t("Maanantai - Sunnuntai", "Monday - Sunday")}</span>
-                    <span>{config.hours.general.monday.open} - {config.hours.general.monday.close}</span>
-                  </div>
+                <div className="flex items-center justify-between text-lg">
+                  <span className="font-medium">{t("Päivittäin", "Daily")}</span>
+                  <span className="font-black text-2xl">{config.hours.general.monday.open} - {config.hours.general.monday.close}</span>
                 </div>
               </div>
             </CardContent>
