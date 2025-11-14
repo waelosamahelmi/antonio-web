@@ -39,8 +39,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  "ravintola babylonn verkkopalvelu on tarkoitettu ruoan tilaamiseen ja ravintolan tietojen katseluun. Käyttämällä palvelua hyväksyt nämä käyttöehdot.",
-                  "ravintola babylon's web service is intended for food ordering and viewing restaurant information. By using the service, you accept these terms of use."
+                  "Ravintola Babylonn verkkopalvelu on tarkoitettu ruoan tilaamiseen ja ravintolan tietojen katseluun. Käyttämällä palvelua hyväksyt nämä käyttöehdot.",
+                  "Ravintola Babylon's web service is intended for food ordering and viewing restaurant information. By using the service, you accept these terms of use."
                 )}
               </p>
             </CardContent>
@@ -100,8 +100,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  "ravintola babylon ei vastaa mahdollisista teknisistä ongelmista verkkopalvelussa. Reklamaatiot ruoasta tulee tehdä 24 tunnin sisällä toimituksesta.",
-                  "ravintola babylon is not responsible for possible technical problems in the web service. Food complaints must be made within 24 hours of delivery."
+                  "Ravintola Babylon ei vastaa mahdollisista teknisistä ongelmista verkkopalvelussa. Reklamaatiot ruoasta tulee tehdä 24 tunnin sisällä toimituksesta.",
+                  "Ravintola Babylon is not responsible for possible technical problems in the web service. Food complaints must be made within 24 hours of delivery."
                 )}
               </p>
             </CardContent>
@@ -119,7 +119,7 @@ export default function Terms() {
                 )}
               </p>
               <p>
-                <strong>ravintola babylon</strong><br />
+                <strong>Ravintola Babylon</strong><br />
                 Rauhankatu 19 c, 15110 Lahti<br />
                 Puhelin: +35835899089<br />
                 Sähköposti: info@ravintolababylon.fi

@@ -483,7 +483,7 @@ GRANT ALL ON public.users TO authenticated;
     - Add policy for authenticated admin write access
 
   3. Data
-    - Insert default ravintola babylon configuration
+    - Insert default Ravintola Babylon configuration
 */
 
 CREATE TABLE IF NOT EXISTS restaurant_config (
@@ -545,7 +545,7 @@ CREATE TRIGGER update_restaurant_config_updated_at
   BEFORE UPDATE ON restaurant_config
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Insert default ravintola babylon configuration
+-- Insert default Ravintola Babylon configuration
 INSERT INTO restaurant_config (
   name,
   name_en,
@@ -566,12 +566,12 @@ INSERT INTO restaurant_config (
   hero,
   is_active
 ) VALUES (
-  'ravintola babylon',
-  'ravintola babylon',
+  'Ravintola Babylon',
+  'Ravintola Babylon',
   'Laadukkaita aterioita Lahden sydämessä',
   'Quality meals in the heart of Lahti',
-  'ravintola babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.',
-  'At ravintola babylon we offer quality meals and invite you to taste our delicious food.',
+  'Ravintola Babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.',
+  'At Ravintola Babylon we offer quality meals and invite you to taste our delicious food.',
   '+35835899089',
   'info@ravintolababylon.fi',
   '{
@@ -669,8 +669,8 @@ INSERT INTO restaurant_config (
     "backgroundColor": "#8B4513"
   }',
   '{
-    "story": "ravintola babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
-    "storyEn": "At ravintola babylon we offer quality meals and invite you to taste our delicious food.",
+    "story": "Ravintola Babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
+    "storyEn": "At Ravintola Babylon we offer quality meals and invite you to taste our delicious food.",
     "mission": "Tarjoamme Lahdessa parhaita pizzoja, kebabeja ja muita herkullisia ruokia ystävällisessä palvelussa.",
     "missionEn": "We offer the best pizzas, kebabs and other delicious food in Lahti with friendly service.",
     "specialties": [

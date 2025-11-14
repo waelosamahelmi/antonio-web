@@ -81,7 +81,7 @@ export function DeliveryMap({ onDeliveryCalculated, initialAddress = "", branchL
       }).addTo(map);
       
       // Add restaurant marker
-      const branchName = branchLocation?.name || t("ravintola babylon", "ravintola babylon");
+      const branchName = branchLocation?.name || t("Ravintola Babylon", "Ravintola Babylon");
       const branchAddress = branchLocation?.address || "Pasintie 2, 45410 Lahti";
       
       const restaurantIcon = L.divIcon({

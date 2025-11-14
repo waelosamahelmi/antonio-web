@@ -270,14 +270,14 @@ export function mergeConfigWithDatabaseSettings(
   return mergedConfig;
 }
 
-// Default configuration for ravintola babylon
+// Default configuration for Ravintola Babylon
 export const ravintola_babylon_CONFIG: RestaurantConfig = {
-  name: "ravintola babylon",
-  nameEn: "ravintola babylon",
+  name: "Ravintola Babylon",
+  nameEn: "Ravintola Babylon",
   tagline: "Laadukkaita aterioita Lahden sydämessä",
   taglineEn: "Quality meals in the heart of Lahti",
-  description: "ravintola babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
-  descriptionEn: "At ravintola babylon we offer quality meals and invite you to taste our delicious food.",
+  description: "Ravintola Babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
+  descriptionEn: "At Ravintola Babylon we offer quality meals and invite you to taste our delicious food.",
   
   phone: "+35835899089",
   email: "info@ravintolababylon.fi",
@@ -405,8 +405,8 @@ export const ravintola_babylon_CONFIG: RestaurantConfig = {
   },
   
   about: {
-    story: "ravintola babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
-    storyEn: "At ravintola babylon we offer quality meals and invite you to taste our delicious food.",
+    story: "Ravintola Babylonssa tarjoamme laadukkaita aterioita ja kutsumme sinut maistamaan herkullisia ruokiamme.",
+    storyEn: "At Ravintola Babylon we offer quality meals and invite you to taste our delicious food.",
     mission: "Tarjoamme Lahdessa parhaita pizzoja, kebabeja ja muita herkullisia ruokia ystävällisessä palvelussa.",
     missionEn: "We offer the best pizzas, kebabs and other delicious food in Lahti with friendly service.",
     specialties: [

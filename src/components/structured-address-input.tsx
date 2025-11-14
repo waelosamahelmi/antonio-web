@@ -311,7 +311,7 @@ export function StructuredAddressInput({
       
       // Add restaurant marker
       const restaurantIcon = L.divIcon({
-        html: `<div style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3); white-space: nowrap;">🍕 ravintola babylon</div>`,
+        html: `<div style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.3); white-space: nowrap;">🍕 Ravintola Babylon</div>`,
         className: 'custom-marker',
         iconSize: [100, 25],
         iconAnchor: [50, 25]
@@ -321,7 +321,7 @@ export function StructuredAddressInput({
         .addTo(map)
         .bindPopup(`
           <div style="text-align: center;">
-            <strong>ravintola babylon</strong><br>
+            <strong>Ravintola Babylon</strong><br>
             <small>${RESTAURANT_LOCATION.address}</small>
           </div>
         `);

@@ -292,7 +292,7 @@ A restaurant admin interface can be built to manage configurations through a web
 ### For Existing Restaurants
 
 1. **Run the migration** to create the `restaurant_config` table
-2. **The default ravintola babylon config** is automatically inserted
+2. **The default Ravintola Babylon config** is automatically inserted
 3. **No code changes needed** - the website continues working
 
 ### For New Restaurants
