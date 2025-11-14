@@ -121,7 +121,7 @@ export default function Menu() {
     const matchesSearch = searchTerm === "" || 
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.nameEn.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBranch = selectedBranch === null || item.branch_id === null || item.branch_id === selectedBranch;
+    const matchesBranch = selectedBranch === null || (item as any).branch_id === null || (item as any).branch_id === selectedBranch;
     return matchesCategory && matchesSearch && matchesBranch && item.isAvailable;
   }) || [];
 

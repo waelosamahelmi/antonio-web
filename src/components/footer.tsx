@@ -35,9 +35,9 @@ export function Footer() {
             </p>
             {/* Social Links */}
             <div className="flex space-x-3">
-              {config.contact?.social?.facebook && (
+              {config.facebook && (
                 <a
-                  href={config.contact.social.facebook}
+                  href={config.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white/10 backdrop-blur-sm p-3 rounded-xl hover:bg-gradient-to-r hover:from-red-500 hover:to-orange-500 transition-all hover:scale-110 group shadow-lg"
@@ -45,9 +45,9 @@ export function Footer() {
                   <Facebook className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 </a>
               )}
-              {config.contact?.social?.instagram && (
+              {config.instagram && (
                 <a
-                  href={config.contact.social.instagram}
+                  href={config.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white/10 backdrop-blur-sm p-3 rounded-xl hover:bg-gradient-to-r hover:from-red-500 hover:to-orange-500 transition-all hover:scale-110 group shadow-lg"

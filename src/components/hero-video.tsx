@@ -121,7 +121,7 @@ export function HeroVideo() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{__html: `
         @keyframes slow-zoom {
           0%, 100% { transform: scale(1.05); }
           50% { transform: scale(1.1); }
@@ -137,7 +137,7 @@ export function HeroVideo() {
           background-size: 200% auto;
           animation: gradient 3s linear infinite;
         }
-      `}</style>
+      `}} />
     </section>
   );
 }

@@ -165,10 +165,10 @@ SELECT
     'country', 'Finland'
   ),
   jsonb_build_object(
-    'facebook', 'https://www.facebook.com/ravintolababylo',
-    'instagram', 'https://www.instagram.com/ravintolababylo',
+    'facebook', 'https://www.facebook.com/ravintolababylon',
+    'instagram', 'https://www.instagram.com/ravintolababylon',
     'twitter', '',
-    'website', 'https://babylon.fi'
+    'website', 'https://ravintolababylon.fi'
   ),
   jsonb_build_object(
     'general', jsonb_build_object(
