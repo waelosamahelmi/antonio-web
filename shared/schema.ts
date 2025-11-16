@@ -48,6 +48,7 @@ export const menuItems = pgTable("menu_items", {
   // Conditional pricing fields for customizable items (e.g., "Your Choice Pizza")
   hasConditionalPricing: boolean("has_conditional_pricing").default(false),
   includedToppingsCount: integer("included_toppings_count").default(0), // Number of free toppings included in base price
+  branchId: integer("branch_id").references(() => branches.id), // NULL = available at all branches
 });
 
 export const orders = pgTable("orders", {
@@ -88,6 +89,7 @@ export const users = pgTable("users", {
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   lastLogin: timestamp("last_login"),
+  branchId: integer("branch_id").references(() => branches.id), // Associates user with a specific branch
 });
 
 export const toppings = pgTable("toppings", {
@@ -143,6 +145,25 @@ export const restaurantSettings = pgTable("restaurant_settings", {
   lunchBuffetHours: text("lunch_buffet_hours").notNull(),
   specialMessage: text("special_message"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const promotions = pgTable("promotions", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  nameEn: text("name_en").notNull(),
+  description: text("description"),
+  descriptionEn: text("description_en"),
+  discountType: text("discount_type").notNull(), // 'percentage' or 'fixed'
+  discountValue: decimal("discount_value", { precision: 10, scale: 2 }).notNull(),
+  categoryId: integer("category_id").references(() => categories.id), // NULL = all categories
+  branchId: integer("branch_id").references(() => branches.id), // NULL = all branches
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  isActive: boolean("is_active").default(true),
+  minOrderAmount: decimal("min_order_amount", { precision: 10, scale: 2 }).default("0"),
+  maxDiscountAmount: decimal("max_discount_amount", { precision: 10, scale: 2 }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertCategorySchema = createInsertSchema(categories).omit({
@@ -201,6 +222,12 @@ export const insertRestaurantSettingsSchema = createInsertSchema(restaurantSetti
   updatedAt: true,
 });
 
+export const insertPromotionSchema = createInsertSchema(promotions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type Category = typeof categories.$inferSelect;
 export type Branch = typeof branches.$inferSelect;
 export type MenuItem = typeof menuItems.$inferSelect;
@@ -213,6 +240,7 @@ export type ToppingGroupItem = typeof toppingGroupItems.$inferSelect;
 export type MenuItemToppingGroup = typeof menuItemToppingGroups.$inferSelect;
 export type CategoryToppingGroup = typeof categoryToppingGroups.$inferSelect;
 export type RestaurantSettings = typeof restaurantSettings.$inferSelect;
+export type Promotion = typeof promotions.$inferSelect;
 
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type InsertBranch = z.infer<typeof insertBranchSchema>;
@@ -226,3 +254,4 @@ export type InsertToppingGroupItem = z.infer<typeof insertToppingGroupItemSchema
 export type InsertMenuItemToppingGroup = z.infer<typeof insertMenuItemToppingGroupSchema>;
 export type InsertCategoryToppingGroup = z.infer<typeof insertCategoryToppingGroupSchema>;
 export type InsertRestaurantSettings = z.infer<typeof insertRestaurantSettingsSchema>;
+export type InsertPromotion = z.infer<typeof insertPromotionSchema>;

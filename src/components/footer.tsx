@@ -1,6 +1,6 @@
 import { useLanguage } from "@/lib/language-context";
 import { useRestaurant } from "@/lib/restaurant-context";
-import { UtensilsCrossed, Phone, Mail, MapPin, Heart, Facebook, Instagram } from "lucide-react";
+import { UtensilsCrossed, Phone, Mail, MapPin, Heart, Facebook, Instagram, Music } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { Link } from "wouter";
 
@@ -53,6 +53,17 @@ export function Footer() {
                   className="bg-white/10 backdrop-blur-sm p-3 rounded-xl hover:bg-gradient-to-r hover:from-red-500 hover:to-orange-500 transition-all hover:scale-110 group shadow-lg"
                 >
                   <Instagram className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                </a>
+              )}
+              {config.tiktok && (
+                <a
+                  href={config.tiktok}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white/10 backdrop-blur-sm p-3 rounded-xl hover:bg-gradient-to-r hover:from-red-500 hover:to-orange-500 transition-all hover:scale-110 group shadow-lg"
+                  title="TikTok"
+                >
+                  <Music className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 </a>
               )}
             </div>
