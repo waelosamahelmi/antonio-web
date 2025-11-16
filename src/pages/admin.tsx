@@ -263,6 +263,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onClose }) => {
                           onChange={(e) => updateConfig('instagram', e.target.value)}
                         />
                       </div>
+                      <div>
+                        <Label htmlFor="tiktok">TikTok URL</Label>
+                        <Input
+                          id="tiktok"
+                          value={config.tiktok || ''}
+                          onChange={(e) => updateConfig('tiktok', e.target.value)}
+                        />
+                      </div>
                     </div>
                   </div>
                 </CardContent>

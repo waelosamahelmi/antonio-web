@@ -22,6 +22,7 @@ export interface DatabaseRestaurantConfig {
   social_media: {
     facebook?: string;
     instagram?: string;
+    tiktok?: string;
     website?: string;
   };
   hours: {
@@ -148,6 +149,7 @@ function convertDatabaseConfigToRestaurantConfig(dbConfig: DatabaseRestaurantCon
     address: dbConfig.address,
     facebook: dbConfig.social_media.facebook,
     instagram: dbConfig.social_media.instagram,
+    tiktok: dbConfig.social_media.tiktok,
     website: dbConfig.social_media.website,
     hours: dbConfig.hours,
     services: dbConfig.services,
@@ -156,6 +158,34 @@ function convertDatabaseConfigToRestaurantConfig(dbConfig: DatabaseRestaurantCon
     logo: dbConfig.logo,
     about: dbConfig.about,
     hero: dbConfig.hero,
+  };
+}
+
+// Convert RestaurantConfig to database format
+export function convertRestaurantConfigToDatabaseConfig(config: RestaurantConfig): Partial<DatabaseRestaurantConfig> {
+  return {
+    name: config.name,
+    name_en: config.nameEn,
+    tagline: config.tagline,
+    tagline_en: config.taglineEn,
+    description: config.description,
+    description_en: config.descriptionEn,
+    phone: config.phone,
+    email: config.email,
+    address: config.address,
+    social_media: {
+      facebook: config.facebook,
+      instagram: config.instagram,
+      tiktok: config.tiktok,
+      website: config.website,
+    },
+    hours: config.hours,
+    services: config.services,
+    delivery_config: config.delivery,
+    theme: config.theme,
+    logo: config.logo,
+    about: config.about,
+    hero: config.hero,
   };
 }
 

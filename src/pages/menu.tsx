@@ -118,10 +118,30 @@ export default function Menu() {
 
   const filteredItems = menuItems?.filter(item => {
     const matchesCategory = selectedCategory === "all" || item.categoryId?.toString() === selectedCategory;
-    const matchesSearch = searchTerm === "" || 
+    const matchesSearch = searchTerm === "" ||
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.nameEn.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBranch = selectedBranch === null || (item as any).branch_id === null || (item as any).branch_id === selectedBranch;
+
+    // Branch filtering logic:
+    // - If "Kaikki" (All) is selected: show all items
+    // - If a specific branch is selected: show items assigned to that branch OR items with null/undefined branch_id (available everywhere)
+    // - Hide items assigned to OTHER branches
+    const itemBranchId = (item as any).branch_id;
+    const matchesBranch = selectedBranch === null || // "Kaikki" selected - show all
+                          itemBranchId === null || // Item available at all branches
+                          itemBranchId === undefined || // Item available at all branches (no branch_id field)
+                          itemBranchId === selectedBranch; // Item assigned to selected branch
+
+    // Debug logging to help diagnose branch filtering issues
+    if (selectedBranch !== null && import.meta.env.DEV) {
+      console.log('Branch filter:', {
+        itemName: item.name,
+        itemBranchId,
+        selectedBranch,
+        matchesBranch
+      });
+    }
+
     return matchesCategory && matchesSearch && matchesBranch && item.isAvailable;
   }) || [];
 

@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { type RestaurantConfig, ravintola_babylon_CONFIG } from "@/config/restaurant-config";
-import { useRestaurantConfig } from "@/hooks/use-restaurant-config";
+import { useRestaurantConfig, convertRestaurantConfigToDatabaseConfig } from "@/hooks/use-restaurant-config";
 
 interface RestaurantContextType {
   config: RestaurantConfig;
-  updateConfig: (updates: any) => Promise<void>;
+  updateConfig: (updates: RestaurantConfig) => Promise<void>;
   loading: boolean;
   error: string | null;
 }
@@ -13,9 +13,15 @@ const RestaurantContext = createContext<RestaurantContextType | undefined>(undef
 
 export function RestaurantProvider({ children }: { children: React.ReactNode }) {
   const { config: dbConfig, loading, error, updateConfig: updateDbConfig } = useRestaurantConfig();
-  
+
   // Use database config if available, otherwise fallback to hardcoded config
   const config = dbConfig || ravintola_babylon_CONFIG;
+
+  // Wrapper function to convert RestaurantConfig to DatabaseRestaurantConfig before saving
+  const updateConfig = async (updates: RestaurantConfig) => {
+    const dbUpdates = convertRestaurantConfigToDatabaseConfig(updates);
+    await updateDbConfig(dbUpdates);
+  };
 
   // Show loading state only briefly to avoid "Loading website..." getting stuck
   if (loading && !config) {
@@ -23,13 +29,13 @@ export function RestaurantProvider({ children }: { children: React.ReactNode }) 
     const timeoutId = setTimeout(() => {
       console.warn('Restaurant config loading timeout, using fallback');
     }, 5000);
-    
+
     return (
-      <RestaurantContext.Provider value={{ 
-        config: ravintola_babylon_CONFIG, 
-        updateConfig: updateDbConfig, 
-        loading: false, 
-        error: null 
+      <RestaurantContext.Provider value={{
+        config: ravintola_babylon_CONFIG,
+        updateConfig,
+        loading: false,
+        error: null
       }}>
         {children}
       </RestaurantContext.Provider>
@@ -37,11 +43,11 @@ export function RestaurantProvider({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <RestaurantContext.Provider value={{ 
-      config, 
-      updateConfig: updateDbConfig, 
-      loading, 
-      error 
+    <RestaurantContext.Provider value={{
+      config,
+      updateConfig,
+      loading,
+      error
     }}>
       {children}
     </RestaurantContext.Provider>
