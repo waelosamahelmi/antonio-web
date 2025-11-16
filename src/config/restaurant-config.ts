@@ -70,6 +70,7 @@ export interface RestaurantConfig {
   // Social Media
   facebook?: string;
   instagram?: string;
+  tiktok?: string;
   website?: string;
   
   // Status
