@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Save, X, Plus, Trash2 } from 'lucide-react';
 import { RestaurantConfig } from '../config/restaurant-config';
 import { useRestaurant } from '../lib/restaurant-context';
+import { LocationsAdmin } from '../components/locations-admin';
 
 interface AdminPageProps {
   onClose: () => void;
@@ -103,13 +104,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onClose }) => {
         
         <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
           <Tabs defaultValue="basic" className="p-6">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
               <TabsTrigger value="contact">Contact</TabsTrigger>
               <TabsTrigger value="hours">Hours</TabsTrigger>
               <TabsTrigger value="delivery">Delivery</TabsTrigger>
               <TabsTrigger value="about">About</TabsTrigger>
               <TabsTrigger value="theme">Theme</TabsTrigger>
+              <TabsTrigger value="locations">Ruokapisteet</TabsTrigger>
             </TabsList>
 
             <TabsContent value="basic" className="space-y-6">
@@ -638,6 +640,10 @@ const AdminPage: React.FC<AdminPageProps> = ({ onClose }) => {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            <TabsContent value="locations" className="space-y-6">
+              <LocationsAdmin />
             </TabsContent>
           </Tabs>
         </div>

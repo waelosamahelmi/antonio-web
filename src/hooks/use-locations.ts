@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
 export interface Location {
@@ -32,6 +32,21 @@ export function useLocations() {
   });
 }
 
+export function useAllLocations() {
+  return useQuery({
+    queryKey: ["locations-all"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("locations")
+        .select("*")
+        .order("display_order", { ascending: true });
+
+      if (error) throw error;
+      return data as Location[];
+    },
+  });
+}
+
 export function useLocationsByRegion() {
   return useQuery({
     queryKey: ["locations-by-region"],
@@ -55,6 +70,71 @@ export function useLocationsByRegion() {
       }, {} as Record<string, Location[]>);
 
       return grouped;
+    },
+  });
+}
+
+export function useCreateLocation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (location: Omit<Location, 'id' | 'created_at' | 'updated_at'>) => {
+      const { data, error } = await supabase
+        .from("locations")
+        .insert([location])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Location;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: ["locations-all"] });
+      queryClient.invalidateQueries({ queryKey: ["locations-by-region"] });
+    },
+  });
+}
+
+export function useUpdateLocation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...location }: Partial<Location> & { id: number }) => {
+      const { data, error } = await supabase
+        .from("locations")
+        .update(location)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Location;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: ["locations-all"] });
+      queryClient.invalidateQueries({ queryKey: ["locations-by-region"] });
+    },
+  });
+}
+
+export function useDeleteLocation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const { error } = await supabase
+        .from("locations")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: ["locations-all"] });
+      queryClient.invalidateQueries({ queryKey: ["locations-by-region"] });
     },
   });
 }
