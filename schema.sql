@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
   customer_email text,
   delivery_address text,
   order_type text NOT NULL CHECK (order_type IN ('delivery', 'pickup', 'dine-in')),
-  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled')),
+  status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'confirmed', 'preparing', 'ready', 'completed', 'delivered', 'cancelled')),
   subtotal numeric NOT NULL CHECK (subtotal >= 0),
   delivery_fee numeric DEFAULT 0 CHECK (delivery_fee >= 0),
   total_amount numeric NOT NULL CHECK (total_amount >= 0),

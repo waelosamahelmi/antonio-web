@@ -38,7 +38,7 @@ export function OrderSuccessModal({ isOpen, onClose, orderType, orderNumber }: O
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-auto">
+      <DialogContent className="max-w-md mx-auto max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center">
           <DialogTitle className="flex flex-col items-center space-y-4">
             <CheckCircle className="w-16 h-16 text-green-600 animate-pulse" />

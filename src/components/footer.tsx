@@ -1,12 +1,14 @@
 import { useLanguage } from "@/lib/language-context";
 import { useRestaurant } from "@/lib/restaurant-context";
+import { useBranches } from "@/hooks/use-branches";
 import { UtensilsCrossed, Phone, Mail, MapPin, Heart, Facebook, Instagram, Music } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { Link } from "wouter";
 
 export function Footer() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { config } = useRestaurant();
+  const { data: branches } = useBranches();
   
   const IconComponent = (LucideIcons as any)[config.logo.icon] || LucideIcons.UtensilsCrossed;
 
@@ -94,9 +96,9 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/contact" className="text-gray-400 hover:text-white transition-colors flex items-center group">
+                <a href="/branches" className="text-gray-400 hover:text-white transition-colors flex items-center group">
                   <div className="w-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></div>
-                  {t("Yhteystiedot", "Contact")}
+                  {t("Ravintolat", "Branches")}
                 </a>
               </li>
               <li>
@@ -133,42 +135,87 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info - All Branches */}
           <div className="space-y-6">
             <h3 className="text-xl font-bold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
               {t("Yhteystiedot", "Contact Info")}
             </h3>
-            <div className="space-y-4">
-              <a
-                href={`tel:${config.phone}`}
-                className="flex items-start space-x-3 text-gray-400 hover:text-white transition-all group"
-              >
-                <div className="bg-white/10 backdrop-blur-sm p-2.5 rounded-xl group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all group-hover:scale-110 shadow-lg">
-                  <Phone className="w-5 h-5 flex-shrink-0 group-hover:rotate-12 transition-transform" />
-                </div>
-                <span className="pt-1">{config.phone}</span>
-              </a>
-              <a
-                href={`mailto:${config.email}`}
-                className="flex items-start space-x-3 text-gray-400 hover:text-white transition-all group"
-              >
-                <div className="bg-white/10 backdrop-blur-sm p-2.5 rounded-xl group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all group-hover:scale-110 shadow-lg">
-                  <Mail className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
-                </div>
-                <span className="pt-1 break-all">{config.email}</span>
-              </a>
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${config.address.street}, ${config.address.postalCode} ${config.address.city}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-start space-x-3 text-gray-400 hover:text-white transition-all group"
-              >
-                <div className="bg-white/10 backdrop-blur-sm p-2.5 rounded-xl group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all group-hover:scale-110 shadow-lg">
-                  <MapPin className="w-5 h-5 flex-shrink-0 group-hover:bounce transition-transform" />
-                </div>
-                <span className="pt-1">{config.address.street}, {config.address.postalCode} {config.address.city}</span>
-              </a>
-            </div>
+            {branches && branches.length > 0 ? (
+              <div className="space-y-6">
+                {branches.map((branch) => (
+                  <div key={branch.id} className="space-y-3">
+                    <h4 className="font-semibold text-white text-sm">
+                      {language === 'en' ? branch.name_en : branch.name}
+                    </h4>
+                    <div className="space-y-2">
+                      <a
+                        href={`tel:${branch.phone}`}
+                        className="flex items-start space-x-2 text-gray-400 hover:text-white transition-all group text-sm"
+                      >
+                        <div className="bg-white/10 backdrop-blur-sm p-1.5 rounded-lg group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all shadow-lg">
+                          <Phone className="w-3.5 h-3.5 flex-shrink-0" />
+                        </div>
+                        <span className="pt-0.5">{branch.phone}</span>
+                      </a>
+                      {branch.email && (
+                        <a
+                          href={`mailto:${branch.email}`}
+                          className="flex items-start space-x-2 text-gray-400 hover:text-white transition-all group text-sm"
+                        >
+                          <div className="bg-white/10 backdrop-blur-sm p-1.5 rounded-lg group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all shadow-lg">
+                            <Mail className="w-3.5 h-3.5 flex-shrink-0" />
+                          </div>
+                          <span className="pt-0.5 break-all">{branch.email}</span>
+                        </a>
+                      )}
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(branch.address)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start space-x-2 text-gray-400 hover:text-white transition-all group text-sm"
+                      >
+                        <div className="bg-white/10 backdrop-blur-sm p-1.5 rounded-lg group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all shadow-lg">
+                          <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
+                        </div>
+                        <span className="pt-0.5">{branch.address}</span>
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <a
+                  href={`tel:${config.phone}`}
+                  className="flex items-start space-x-3 text-gray-400 hover:text-white transition-all group"
+                >
+                  <div className="bg-white/10 backdrop-blur-sm p-2.5 rounded-xl group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all group-hover:scale-110 shadow-lg">
+                    <Phone className="w-5 h-5 flex-shrink-0 group-hover:rotate-12 transition-transform" />
+                  </div>
+                  <span className="pt-1">{config.phone}</span>
+                </a>
+                <a
+                  href={`mailto:${config.email}`}
+                  className="flex items-start space-x-3 text-gray-400 hover:text-white transition-all group"
+                >
+                  <div className="bg-white/10 backdrop-blur-sm p-2.5 rounded-xl group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all group-hover:scale-110 shadow-lg">
+                    <Mail className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
+                  </div>
+                  <span className="pt-1 break-all">{config.email}</span>
+                </a>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${config.address.street}, ${config.address.postalCode} ${config.address.city}`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start space-x-3 text-gray-400 hover:text-white transition-all group"
+                >
+                  <div className="bg-white/10 backdrop-blur-sm p-2.5 rounded-xl group-hover:bg-gradient-to-r group-hover:from-red-500 group-hover:to-orange-500 transition-all group-hover:scale-110 shadow-lg">
+                    <MapPin className="w-5 h-5 flex-shrink-0 group-hover:bounce transition-transform" />
+                  </div>
+                  <span className="pt-1">{config.address.street}, {config.address.postalCode} {config.address.city}</span>
+                </a>
+              </div>
+            )}
           </div>
         </div>
 

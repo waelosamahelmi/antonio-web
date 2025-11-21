@@ -1,0 +1,30 @@
+{
+  "name": "babylon-email-api",
+  "version": "1.0.0",
+  "description": "Email API service for Ravintola Babylon",
+  "main": "email-endpoint.js",
+  "scripts": {
+    "start": "node email-endpoint.js",
+    "dev": "nodemon email-endpoint.js"
+  },
+  "keywords": [
+    "email",
+    "smtp",
+    "nodejs",
+    "express"
+  ],
+  "author": "Ravintola Babylon",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemailer": "^6.9.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

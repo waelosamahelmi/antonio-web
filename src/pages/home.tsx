@@ -10,8 +10,8 @@ import { CartModal } from "@/components/cart-modal";
 import { CheckoutModal } from "@/components/checkout-modal";
 import { UniversalHeader } from "@/components/universal-header";
 import { MobileNav } from "@/components/mobile-nav";
-import { HeroVideo } from "@/components/hero-video";
-import { MultiBranchStatusHeader } from "@/components/multi-branch-status-header";
+import { HeroVideoWithPromotions } from "@/components/hero-video-with-promotions";
+import { MultiBranchStatusHeaderV2 } from "@/components/multi-branch-status-header-v2";
 import { AboutSection } from "@/components/about-section";
 import { Footer } from "@/components/footer";
 import { 
@@ -69,8 +69,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-stone-900">
       <UniversalHeader onCartClick={handleCartOpen} />
-      <MultiBranchStatusHeader />
-      <HeroVideo />
+      <MultiBranchStatusHeaderV2 />
+      <HeroVideoWithPromotions />
 
       {/* Service Highlights */}
       <section className="py-20 relative overflow-hidden">

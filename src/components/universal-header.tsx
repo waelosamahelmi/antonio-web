@@ -42,11 +42,12 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
   }, [isMobileMenuOpen, isLanguageMenuOpen]);
 
   const navigationItems = [
-    { href: "/", label: t("Etusivu", "Home") },
-    { href: "/menu", label: t("Menu", "Menu") },
-    { href: "/about", label: t("Meistä", "About") },
-    { href: "/contact", label: t("Yhteystiedot", "Contact") },
-    { href: "/locations", label: t("Ruokapisteet", "Locations") },
+    { href: "/", label: t("Etusivu", "Home", "الصفحة الرئيسية", "Главная", "Hem") },
+    { href: "/menu", label: t("Menu", "Menu", "القائمة", "Меню", "Meny") },
+    { href: "/lounas", label: t("Lounas", "Lunch", "غداء", "Обед", "Lunch") },
+    { href: "/about", label: t("Meistä", "About", "معلومات عنا", "О нас", "Om oss") },
+    { href: "/branches", label: t("Ravintolat", "Branches", "الفروع", "Филиалы", "Filialer") },
+    { href: "/locations", label: t("Ruokapisteet", "Locations", "المواقع", "Местоположения", "Platser") },
   ];
 
   return (
@@ -104,11 +105,11 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
                     setIsLanguageMenuOpen(!isLanguageMenuOpen);
                   }}
                   className="px-3 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-stone-800 flex items-center space-x-2 transition-all hover:scale-105"
-                  title={t("Vaihda kieli", "Change language")}
+                  title={t("Vaihda kieli", "Change language", "تغيير اللغة", "Изменить язык", "Byt språk")}
                 >
                   <Globe className="w-5 h-5" />
                   <span className="text-sm font-bold hidden sm:inline">
-                    {language === "fi" ? "FI" : "EN"}
+                    {language === "fi" ? "FI" : language === "en" ? "EN" : language === "ar" ? "AR" : language === "ru" ? "RU" : "SV"}
                   </span>
                 </Button>
                 
@@ -138,6 +139,42 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
                     >
                       🇺🇸 English
                     </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLanguage("ar");
+                        setIsLanguageMenuOpen(false);
+                      }}
+                      className={`w-full px-4 py-3 text-left hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-red-950 dark:hover:to-orange-950 transition-all text-sm font-medium ${
+                        language === "ar" ? "bg-gradient-to-r from-red-500 to-orange-500 text-white" : ""
+                      }`}
+                    >
+                      🇸🇦 العربية
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLanguage("ru");
+                        setIsLanguageMenuOpen(false);
+                      }}
+                      className={`w-full px-4 py-3 text-left hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-red-950 dark:hover:to-orange-950 transition-all text-sm font-medium ${
+                        language === "ru" ? "bg-gradient-to-r from-red-500 to-orange-500 text-white" : ""
+                      }`}
+                    >
+                      🇷🇺 Русский
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLanguage("sv");
+                        setIsLanguageMenuOpen(false);
+                      }}
+                      className={`w-full px-4 py-3 text-left hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-red-950 dark:hover:to-orange-950 transition-all text-sm font-medium ${
+                        language === "sv" ? "bg-gradient-to-r from-red-500 to-orange-500 text-white" : ""
+                      }`}
+                    >
+                      🇸🇪 Svenska
+                    </button>
                   </div>
                 )}
               </div>
@@ -146,7 +183,7 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
                 <Button
                   onClick={onCartClick}
                   className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-5 py-5 flex items-center justify-center relative rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all group"
-                  title={t("Kori", "Cart")}
+                  title={t("Kori", "Cart", "عربة التسوق", "Корзина", "Varukorg")}
                 >
                   <ShoppingCart className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                   {totalItems > 0 && (
@@ -166,7 +203,7 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
                   onClick={onCartClick}
                   className="bg-gradient-to-r from-red-500 to-orange-500 text-white p-3 flex items-center justify-center relative rounded-xl shadow-lg"
                   size="sm"
-                  title={t("Kori", "Cart")}
+                  title={t("Kori", "Cart", "عربة التسوق", "Корзина", "Varukorg")}
                 >
                   <ShoppingCart className="w-5 h-5" />
                   {totalItems > 0 && (
@@ -186,7 +223,7 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
                   setIsMobileMenuOpen(!isMobileMenuOpen);
                 }}
                 className="p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-stone-800"
-                title={t("Valikko", "Menu")}
+                title={t("Valikko", "Menu", "القائمة", "Меню", "Meny")}
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </Button>
@@ -204,7 +241,7 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
               {/* Mobile Navigation Links */}
               <div className="space-y-2">
                 <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
-                  {t("Navigaatio", "Navigation")}
+                  {t("Navigaatio", "Navigation", "التنقل", "Навигация", "Navigation")}
                 </p>
                 {navigationItems.map((item) => (
                   <Link key={item.href} href={item.href}>
@@ -233,12 +270,12 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
                   {theme === "dark" ? (
                     <>
                       <Sun className="w-5 h-5 mr-3 text-yellow-400" />
-                      {t("Vaalea teema", "Light theme")}
+                      {t("Vaalea teema", "Light theme", "مظهر فاتح", "Светлая тема", "Ljust tema")}
                     </>
                   ) : (
                     <>
                       <Moon className="w-5 h-5 mr-3 text-blue-600" />
-                      {t("Tumma teema", "Dark theme")}
+                      {t("Tumma teema", "Dark theme", "مظهر داكن", "Тёмная тема", "Mörkt tema")}
                     </>
                   )}
                 </Button>
@@ -246,7 +283,7 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
                 {/* Mobile Language Selection */}
                 <div className="space-y-3">
                   <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    {t("Kieli", "Language")}
+                    {t("Kieli", "Language", "اللغة", "Язык", "Språk")}
                   </p>
                   <div className="space-y-2">
                     <button

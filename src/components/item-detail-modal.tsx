@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/lib/language-context";
 import { useQuery } from "@tanstack/react-query";
+import { useToppingGroupsForItem } from "@/hooks/use-topping-groups";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,21 +25,40 @@ export function ItemDetailModal({ item, isOpen, onClose, onAddToCart }: ItemDeta
   const [selectedSize, setSelectedSize] = useState("normal");
   const [selectedToppings, setSelectedToppings] = useState<string[]>([]);
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [radioGroupSelections, setRadioGroupSelections] = useState<Record<number, number>>({});
 
-  // Fetch toppings from API
+  // Fetch topping groups for this item (either category-specific or item-specific)
+  const { data: toppingGroups } = useToppingGroupsForItem(item?.categoryId, item?.id);
+
+  // Debug logging
+  useEffect(() => {
+    if (isOpen && item) {
+      console.log('🔍 ItemDetailModal opened:', {
+        itemName: item.name,
+        itemId: item.id,
+        categoryId: item.categoryId,
+        toppingGroups: toppingGroups,
+        toppingGroupsCount: toppingGroups?.length || 0
+      });
+    }
+  }, [isOpen, item, toppingGroups]);
+
+  // Fetch legacy toppings from API (fallback for old system when no topping groups exist)
+  const hasToppingGroups = toppingGroups && toppingGroups.length > 0;
   const { data: allToppings = [] } = useQuery({
     queryKey: ['/api/toppings'],
-    enabled: isOpen
+    enabled: isOpen && !hasToppingGroups
   });
 
-  // Category detection
-  const isPizza = item?.categoryId === 6 || (item && item.name && item.name.toLowerCase().includes('pizza'));
-  const isKebab = item && item.name && (item.name.toLowerCase().includes('kebab') || item.name.toLowerCase().includes('iskender'));
-  const isChicken = item && item.name && (item.name.toLowerCase().includes('kana') || item.name.toLowerCase().includes('chicken') || item.name.toLowerCase().includes('wing'));
-  const isBurger = item && item.name && (item.name.toLowerCase().includes('burger') || item.name.toLowerCase().includes('hampurilainen'));
-  const isSalad = item && item.name && (item.name.toLowerCase().includes('salaatti') || item.name.toLowerCase().includes('salad'));
-  const isChild = item && item.name && (item.name.toLowerCase().includes('lapsi') || item.name.toLowerCase().includes('child'));
-  const isDrink = item && item.name && (item.name.toLowerCase().includes('coca') || item.name.toLowerCase().includes('fanta') || item.name.toLowerCase().includes('juoma'));
+  // Legacy category detection (only used when no topping groups exist)
+  // All detection now based on categoryId instead of name
+  const isPizza = !hasToppingGroups && item?.categoryId === 6;
+  const isKebab = !hasToppingGroups && (item?.categoryId === 2 || item?.categoryId === 3); // Adjust these IDs as needed
+  const isChicken = !hasToppingGroups && item?.categoryId === 4; // Adjust this ID as needed
+  const isBurger = !hasToppingGroups && item?.categoryId === 5; // Adjust this ID as needed
+  const isSalad = !hasToppingGroups && item?.categoryId === 7; // Adjust this ID as needed
+  const isChild = !hasToppingGroups && item?.categoryId === 8; // Adjust this ID as needed
+  const isDrink = item?.categoryId === 9; // Adjust this ID as needed
 
   // State for radio selections
   const [selectedSauce, setSelectedSauce] = useState("");
@@ -127,8 +147,31 @@ export function ItemDetailModal({ item, isOpen, onClose, onAddToCart }: ItemDeta
     
     return total + toppingPrice;
   }, 0);
+
+  // Calculate price from radio group selections
+  const radioGroupsPrice = Object.entries(radioGroupSelections).reduce((total, [groupId, toppingId]) => {
+    if (!toppingGroups) return total;
+    
+    const groupAssignment = toppingGroups.find((g: any) => 
+      (g.topping_groups || g.toppingGroups)?.id === parseInt(groupId)
+    );
+    const group = groupAssignment?.topping_groups || groupAssignment?.toppingGroups;
+    if (!group) return total;
+    
+    const groupItems = group.topping_group_items || group.toppingGroupItems || [];
+    const selectedItem = groupItems.find((gi: any) => 
+      (gi.toppings || gi.topping)?.id === toppingId
+    );
+    const topping = selectedItem?.toppings || selectedItem?.topping;
+    
+    if (topping && topping.price) {
+      return total + parseFloat(topping.price);
+    }
+    
+    return total;
+  }, 0);
   
-  const totalPrice = (basePrice + sizePrice + drinkPrice + toppingsPrice) * quantity;
+  const totalPrice = (basePrice + sizePrice + drinkPrice + toppingsPrice + radioGroupsPrice) * quantity;
 
   useEffect(() => {
     if (isOpen) {
@@ -136,6 +179,7 @@ export function ItemDetailModal({ item, isOpen, onClose, onAddToCart }: ItemDeta
       setSelectedSize(isDrink ? "0.33L" : "normal");
       setSelectedToppings([]);
       setSpecialInstructions("");
+      setRadioGroupSelections({});
       setSelectedSauce("");
       setSelectedDrink("");
       setSelectedMealSize("");
@@ -160,6 +204,27 @@ export function ItemDetailModal({ item, isOpen, onClose, onAddToCart }: ItemDeta
     if (selectedSize && selectedSize !== "normal") {
       const sizeText = `Size: ${selectedSize}`;
       instructions = instructions ? `${instructions}; ${sizeText}` : sizeText;
+    }
+    
+    // Add radio group selections
+    if (toppingGroups && Object.keys(radioGroupSelections).length > 0) {
+      Object.entries(radioGroupSelections).forEach(([groupId, toppingId]) => {
+        const groupAssignment = toppingGroups.find((g: any) => 
+          (g.topping_groups || g.toppingGroups)?.id === parseInt(groupId)
+        );
+        const group = groupAssignment?.topping_groups || groupAssignment?.toppingGroups;
+        if (group) {
+          const groupItems = group.topping_group_items || group.toppingGroupItems || [];
+          const selectedItem = groupItems.find((gi: any) => 
+            (gi.toppings || gi.topping)?.id === toppingId
+          );
+          const topping = selectedItem?.toppings || selectedItem?.topping;
+          if (topping) {
+            const selectionText = `${group.name}: ${topping.name}`;
+            instructions = instructions ? `${instructions}; ${selectionText}` : selectionText;
+          }
+        }
+      });
     }
     
     if (selectedSauce) {
@@ -189,7 +254,7 @@ export function ItemDetailModal({ item, isOpen, onClose, onAddToCart }: ItemDeta
       selectedToppings.length > 0 ? selectedToppings : undefined,
       instructions || undefined,
       toppingsPrice,
-      sizePrice + drinkPrice
+      sizePrice + drinkPrice + radioGroupsPrice
     );
   };
 
@@ -331,6 +396,182 @@ export function ItemDetailModal({ item, isOpen, onClose, onAddToCart }: ItemDeta
               </div>
             </div>
           )}
+
+          {/* Topping Groups System (New) */}
+          {toppingGroups && toppingGroups.length > 0 && toppingGroups.map((groupAssignment: any) => {
+            const group = groupAssignment.topping_groups;
+            if (!group) {
+              console.log('⚠️ No topping_groups found in:', groupAssignment);
+              return null;
+            }
+
+            const groupItems = group.topping_group_items || [];
+            console.log('🔍 Group:', group.name, 'Items:', groupItems.length, 'Selection type:', group.selection_type, 'Raw items:', groupItems);
+            
+            return (
+              <div key={group.id} className="space-y-4">
+                <Separator />
+                <div>
+                  <h3 className="font-semibold text-lg mb-3">
+                    {group.name}
+                    {group.is_required && <span className="text-red-500 ml-1">*</span>}
+                  </h3>
+                  {group.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      {group.description}
+                    </p>
+                  )}
+
+                  {/* Radio Selection (min=1, max=1) */}
+                  {group.selection_type === 'radio' && (
+                    <RadioGroup 
+                      value={radioGroupSelections[group.id]?.toString() || ""} 
+                      onValueChange={(value) => {
+                        setRadioGroupSelections(prev => ({
+                          ...prev,
+                          [group.id]: parseInt(value)
+                        }));
+                      }}
+                    >
+                      <div className="grid grid-cols-1 gap-3">
+                        {groupItems.map((groupItem: any) => {
+                          const topping = groupItem.toppings;
+                          if (!topping) {
+                            console.log('⚠️ No toppings found in groupItem:', groupItem);
+                            return null;
+                          }
+                          
+                          return (
+                            <div key={topping.id} className="flex items-center justify-between p-3 border rounded-lg">
+                              <div className="flex items-center space-x-3">
+                                <RadioGroupItem value={topping.id.toString()} id={`radio-${group.id}-${topping.id}`} />
+                                <Label htmlFor={`radio-${group.id}-${topping.id}`} className="font-medium">
+                                  {topping.name}
+                                </Label>
+                              </div>
+                              {parseFloat(topping.price) > 0 && (
+                                <span className="text-sm text-gray-600">
+                                  +{formatPrice(parseFloat(topping.price))}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </RadioGroup>
+                  )}
+
+                  {/* Checkbox Selection (min/max limits) */}
+                  {group.selection_type === 'checkbox' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {groupItems.map((groupItem: any) => {
+                        const topping = groupItem.toppings;
+                        if (!topping) {
+                          console.log('⚠️ No toppings found in checkbox groupItem:', groupItem);
+                          return null;
+                        }
+
+                        const isSelected = selectedToppings.includes(topping.id.toString());
+                        const selectedCount = selectedToppings.filter((id) => 
+                          groupItems.some((gi: any) => (gi.toppings || gi.topping)?.id.toString() === id)
+                        ).length;
+                        
+                        const canSelect = !group.max_selections || selectedCount < group.max_selections;
+                        
+                        return (
+                          <div key={topping.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <Checkbox
+                                id={`checkbox-${group.id}-${topping.id}`}
+                                checked={isSelected}
+                                disabled={!isSelected && !canSelect}
+                                onCheckedChange={(checked) => {
+                                  handleToppingChange(topping.id.toString(), !!checked);
+                                }}
+                              />
+                              <Label 
+                                htmlFor={`checkbox-${group.id}-${topping.id}`} 
+                                className="font-medium cursor-pointer"
+                              >
+                                {topping.name}
+                              </Label>
+                            </div>
+                            {parseFloat(topping.price) > 0 && (
+                              <span className="text-sm text-gray-600">
+                                +{formatPrice(parseFloat(topping.price))}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Default rendering when selection_type is undefined - use checkbox */}
+                  {!group.selection_type && groupItems.length > 0 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {groupItems.map((groupItem: any) => {
+                        const topping = groupItem.toppings;
+                        if (!topping) {
+                          console.log('⚠️ No toppings found in default groupItem:', groupItem);
+                          return null;
+                        }
+
+                        const isSelected = selectedToppings.includes(topping.id.toString());
+                        
+                        return (
+                          <div key={topping.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <Checkbox
+                                id={`default-${group.id}-${topping.id}`}
+                                checked={isSelected}
+                                onCheckedChange={(checked) => {
+                                  handleToppingChange(topping.id.toString(), !!checked);
+                                }}
+                              />
+                              <Label 
+                                htmlFor={`default-${group.id}-${topping.id}`} 
+                                className="font-medium cursor-pointer"
+                              >
+                                {topping.name}
+                              </Label>
+                            </div>
+                            {parseFloat(topping.price) > 0 && (
+                              <span className="text-sm text-gray-600">
+                                +{formatPrice(parseFloat(topping.price))}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Selection limits info */}
+                  {group.selection_type === 'checkbox' && (group.min_selections || group.max_selections) && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      {group.min_selections && group.max_selections ? (
+                        t(
+                          `Valitse ${group.min_selections}-${group.max_selections} vaihtoehtoa`,
+                          `Select ${group.min_selections}-${group.max_selections} options`
+                        )
+                      ) : group.min_selections ? (
+                        t(
+                          `Valitse vähintään ${group.min_selections} vaihtoehtoa`,
+                          `Select at least ${group.min_selections} options`
+                        )
+                      ) : (
+                        t(
+                          `Valitse enintään ${group.max_selections} vaihtoehtoa`,
+                          `Select up to ${group.max_selections} options`
+                        )
+                      )}
+                    </p>
+                  )}
+                </div>
+              </div>
+            );
+          })}
 
           {/* Category-specific options */}
           {isDrink && (

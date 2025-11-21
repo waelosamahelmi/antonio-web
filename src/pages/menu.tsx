@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useCategories, useMenuItems } from "@/hooks/use-menu";
 import { useLanguage } from "@/lib/language-context";
 import { useCart } from "@/lib/cart-context";
 import { useBranches } from "@/hooks/use-branches";
+import { useActivePromotions, calculatePromotionDiscount } from "@/hooks/use-promotions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,7 @@ import { CheckoutModal } from "@/components/checkout-modal";
 import { RestaurantClosedModal } from "@/components/restaurant-closed-modal";
 import { UniversalHeader } from "@/components/universal-header";
 import { MobileNav } from "@/components/mobile-nav";
-import { MultiBranchStatusHeader } from "@/components/multi-branch-status-header";
+import { MultiBranchStatusHeaderV2 } from "@/components/multi-branch-status-header-v2";
 import { 
   Search, 
   Leaf, 
@@ -35,7 +36,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
-import { isOnlineOrderingAvailable, getRestaurantStatus } from "@/lib/business-hours";
+import { isAnyBranchOpen, isBranchOrderingAvailable } from "@/lib/branch-business-hours";
 import { useRestaurantSettings } from "@/hooks/use-restaurant-settings";
 
 export default function Menu() {
@@ -45,6 +46,7 @@ export default function Menu() {
   const { data: branches } = useBranches();
   const { addItem } = useCart();
   const { config } = useRestaurantSettings();
+  const { data: promotions } = useActivePromotions();
   
   const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -56,42 +58,49 @@ export default function Menu() {
   const [showClosedModal, setShowClosedModal] = useState(false);
   const [isOrderingAvailable, setIsOrderingAvailable] = useState(true); // Start optimistic
 
-  // Check ordering availability
+  // Check ordering availability based on branch hours
   useEffect(() => {
     const checkOrderingStatus = () => {
-      if (config) {
-        console.log('🔍 Menu: Checking ordering status', {
-          isBusy: config.isBusy,
-          isOnlineOrderingAvailable: isOnlineOrderingAvailable(config)
-        });
-        
-        // Check if restaurant is busy
-        if (config.isBusy) {
-          console.log('⚠️ Menu: Restaurant is BUSY - disabling orders');
-          setIsOrderingAvailable(false);
-          if (!showClosedModal) {
-            setShowClosedModal(true);
-          }
-          return;
-        }
-        
-        const available = isOnlineOrderingAvailable(config);
-        setIsOrderingAvailable(available);
-        
-        // Show closed modal only if we have config and it's definitely closed
-        if (!available && !showClosedModal) {
+      // Check if restaurant is busy first
+      if (config && config.isBusy) {
+        console.log('⚠️ Menu: Restaurant is BUSY - disabling orders');
+        setIsOrderingAvailable(false);
+        if (!showClosedModal) {
           setShowClosedModal(true);
         }
+        return;
+      }
+
+      // Check if any branch is open
+      if (branches && branches.length > 0) {
+        const anyBranchOpen = isAnyBranchOpen(branches);
+
+        console.log('🔍 Menu: Checking branch ordering status', {
+          totalBranches: branches.length,
+          anyBranchOpen,
+          isBusy: config?.isBusy
+        });
+
+        setIsOrderingAvailable(anyBranchOpen);
+
+        // Show closed modal only if no branches are open
+        if (!anyBranchOpen && !showClosedModal) {
+          console.log('⚠️ Menu: All branches are CLOSED - showing modal');
+          setShowClosedModal(true);
+        }
+      } else {
+        // Fallback to true if no branches configured yet
+        setIsOrderingAvailable(true);
       }
     };
 
     checkOrderingStatus();
-    
+
     // Check every minute
     const interval = setInterval(checkOrderingStatus, 60000);
-    
+
     return () => clearInterval(interval);
-  }, [showClosedModal, config]);
+  }, [showClosedModal, config, branches]);
 
   const handleCartOpen = () => {
     if (!isOrderingAvailable) {
@@ -116,31 +125,74 @@ export default function Menu() {
     setIsCartOpen(true);
   };
 
-  const filteredItems = menuItems?.filter(item => {
+  // Apply promotions to menu items
+  const itemsWithPromotions = useMemo(() => {
+    if (!menuItems || !promotions) return menuItems || [];
+
+    return menuItems.map((item: any) => {
+      // Find best applicable promotion for this item
+      const applicablePromotions = promotions.filter((promo: any) => {
+        // Check if promotion applies to this category or all categories
+        const categoryMatch = !promo.category_id || promo.category_id === item.categoryId;
+        // Check if promotion applies to selected branch or all branches
+        const branchMatch = !promo.branch_id || !selectedBranch || promo.branch_id === selectedBranch;
+        return categoryMatch && branchMatch;
+      });
+
+      if (applicablePromotions.length === 0) {
+        return item;
+      }
+
+      // Use the best promotion (highest discount)
+      const bestPromotion = applicablePromotions[0];
+      const itemPrice = parseFloat(item.offerPrice || item.price);
+      const discount = calculatePromotionDiscount(itemPrice, bestPromotion);
+      
+      if (discount > 0) {
+        const promotionalPrice = itemPrice - discount;
+        const discountPercentage = Math.round((discount / itemPrice) * 100);
+        
+        return {
+          ...item,
+          promotionalPrice: promotionalPrice.toFixed(2),
+          promotionDiscount: discount.toFixed(2),
+          promotionPercentage: discountPercentage,
+          activePromotion: bestPromotion,
+        };
+      }
+
+      return item;
+    });
+  }, [menuItems, promotions, selectedBranch]);
+
+  const filteredItems = itemsWithPromotions?.filter(item => {
     const matchesCategory = selectedCategory === "all" || item.categoryId?.toString() === selectedCategory;
     const matchesSearch = searchTerm === "" ||
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.nameEn.toLowerCase().includes(searchTerm.toLowerCase());
 
     // Branch filtering logic:
-    // - If "Kaikki" (All) is selected: show all items
-    // - If a specific branch is selected: show items assigned to that branch OR items with null/undefined branch_id (available everywhere)
-    // - Hide items assigned to OTHER branches
     const itemBranchId = (item as any).branch_id;
-    const matchesBranch = selectedBranch === null || // "Kaikki" selected - show all
-                          itemBranchId === null || // Item available at all branches
-                          itemBranchId === undefined || // Item available at all branches (no branch_id field)
-                          itemBranchId === selectedBranch; // Item assigned to selected branch
-
-    // Debug logging to help diagnose branch filtering issues
-    if (selectedBranch !== null && import.meta.env.DEV) {
-      console.log('Branch filter:', {
-        itemName: item.name,
-        itemBranchId,
-        selectedBranch,
-        matchesBranch
-      });
+    
+    // If "Kaikki" (All) is selected:
+    if (selectedBranch === null) {
+      // Show items with no branch_id (available everywhere)
+      if (itemBranchId === null || itemBranchId === undefined) {
+        return matchesCategory && matchesSearch && item.isAvailable;
+      }
+      
+      // For items with branch_id, only show if that branch is open
+      const itemBranch = branches?.find(b => b.id === itemBranchId);
+      const isBranchOpen = itemBranch ? isBranchOrderingAvailable(itemBranch) : false;
+      
+      return matchesCategory && matchesSearch && item.isAvailable && isBranchOpen;
     }
+    
+    // If a specific branch is selected:
+    // Show items assigned to that branch OR items with null/undefined branch_id (available everywhere)
+    const matchesBranch = itemBranchId === null || 
+                          itemBranchId === undefined || 
+                          itemBranchId === selectedBranch;
 
     return matchesCategory && matchesSearch && matchesBranch && item.isAvailable;
   }) || [];
@@ -250,43 +302,48 @@ export default function Menu() {
       </div>
 
       {/* Restaurant Status */}
-      <MultiBranchStatusHeader />
+      <MultiBranchStatusHeaderV2 />
 
       {/* Branch Selection */}
-      {branches && branches.length > 1 && (
-        <div className="bg-white dark:bg-stone-800 border-b border-gray-200 dark:border-stone-700">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="flex items-center gap-3 flex-wrap">
-              <Store className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              <span className="font-semibold text-gray-700 dark:text-gray-300">
-                {t("Valitse toimipiste:", "Select branch:")}
-              </span>
-              <div className="flex gap-2 flex-wrap">
-                <Button
-                  variant={selectedBranch === null ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedBranch(null)}
-                  className={selectedBranch === null ? "bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700" : ""}
-                >
-                  {t("Kaikki", "All")}
-                </Button>
-                {branches.map((branch) => (
+      {branches && branches.length > 1 && (() => {
+        // Filter to only show open branches
+        const openBranches = branches.filter(branch => isBranchOrderingAvailable(branch));
+        
+        return (
+          <div className="bg-white dark:bg-stone-800 border-b border-gray-200 dark:border-stone-700">
+            <div className="max-w-7xl mx-auto px-4 py-4">
+              <div className="flex items-center gap-3 flex-wrap">
+                <Store className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                  {t("Valitse toimipiste:", "Select branch:")}
+                </span>
+                <div className="flex gap-2 flex-wrap">
                   <Button
-                    key={branch.id}
-                    variant={selectedBranch === branch.id ? "default" : "outline"}
+                    variant={selectedBranch === null ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setSelectedBranch(branch.id)}
-                    className={selectedBranch === branch.id ? "bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700" : ""}
+                    onClick={() => setSelectedBranch(null)}
+                    className={selectedBranch === null ? "bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700" : ""}
                   >
-                    <MapPin className="w-3.5 h-3.5 mr-1.5" />
-                    {language === 'en' ? branch.name_en : branch.name}
+                    {t("Kaikki", "All")}
                   </Button>
-                ))}
+                  {openBranches.map((branch) => (
+                    <Button
+                      key={branch.id}
+                      variant={selectedBranch === branch.id ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setSelectedBranch(branch.id)}
+                      className={selectedBranch === branch.id ? "bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700" : ""}
+                    >
+                      <MapPin className="w-3.5 h-3.5 mr-1.5" />
+                      {language === 'en' ? branch.name_en : branch.name}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Main Content - Sidebar Layout */}
       <div className="max-w-7xl mx-auto px-4 py-10">
@@ -403,9 +460,9 @@ export default function Menu() {
                       )}
                     </div>
 
-                    {item.offerPercentage && (
+                    {(item.offerPercentage || item.promotionPercentage) && (
                       <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-red-500 to-orange-600 text-white px-4 py-2 rounded-full font-black text-sm shadow-xl animate-pulse">
-                        🔥 -{item.offerPercentage}% OFF
+                        🔥 -{item.promotionPercentage || item.offerPercentage}% OFF
                       </div>
                     )}
                     
@@ -446,10 +503,14 @@ export default function Menu() {
                       
                       <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-stone-700">
                         <div>
-                          {item.offerPrice ? (
+                          {parseFloat(item.price) === 0 ? (
+                            <div className="text-sm text-gray-500 dark:text-gray-400 italic">
+                              {t("Hinta pyynnöstä", "Price on request")}
+                            </div>
+                          ) : (item.promotionalPrice || item.offerPrice) ? (
                             <div>
                               <div className="text-3xl font-black text-red-600 mb-1">
-                                {formatPrice(item.offerPrice)}
+                                {formatPrice(item.promotionalPrice || item.offerPrice)}
                               </div>
                               <div className="text-sm text-gray-400 line-through">
                                 {formatPrice(item.price)}

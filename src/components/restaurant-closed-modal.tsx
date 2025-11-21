@@ -1,9 +1,10 @@
 import { useLanguage } from "@/lib/language-context";
 import { useRestaurantSettings } from "@/hooks/use-restaurant-settings";
+import { useBranches } from "@/hooks/use-branches";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Clock, Store, Phone, MapPin } from "lucide-react";
-import { getRestaurantStatus } from "@/lib/business-hours";
+import { getBranchNextOpeningTime, formatBranchHours } from "@/lib/branch-business-hours";
 
 interface RestaurantClosedModalProps {
   isOpen: boolean;
@@ -11,15 +12,23 @@ interface RestaurantClosedModalProps {
 }
 
 export function RestaurantClosedModal({ isOpen, onClose }: RestaurantClosedModalProps) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { config } = useRestaurantSettings();
-  const status = config ? getRestaurantStatus(config) : null;
-  
+  const { data: branches } = useBranches();
+
   const isBusy = config?.isBusy || false;
+
+  // Get next opening time from first branch
+  const nextOpening = branches && branches.length > 0
+    ? getBranchNextOpeningTime(branches[0])
+    : null;
+
+  // Get first branch for contact info
+  const firstBranch = branches && branches.length > 0 ? branches[0] : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2 text-red-600">
             <Store className="w-5 h-5" />
@@ -57,68 +66,96 @@ export function RestaurantClosedModal({ isOpen, onClose }: RestaurantClosedModal
             </p>
           </div>
 
-          {status?.nextOrdering && !isBusy && (
+          {nextOpening && !isBusy && (
             <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg">
               <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
                 {t("Seuraava tilausaika", "Next ordering time")}
               </h4>
               <p className="text-blue-800 dark:text-blue-200">
-                {status.nextOrdering.day} {t("klo", "at")} {status.nextOrdering.time}
+                {language === 'fi' ? nextOpening.day : nextOpening.dayEn} {t("klo", "at")} {nextOpening.time}
               </p>
             </div>
           )}
 
-          {!isBusy && (
+          {!isBusy && firstBranch && firstBranch.opening_hours && (
             <div className="space-y-3">
               <h4 className="font-medium text-gray-900 dark:text-white">
-                {t("Tilausajat", "Ordering Hours")}
+                {t("Aukioloajat", "Opening Hours")}
+                {branches && branches.length > 1 && (
+                  <span className="text-xs text-gray-500 ml-2">
+                    ({language === 'fi' ? firstBranch.name : firstBranch.name_en})
+                  </span>
+                )}
               </h4>
-              
-              <div className="grid grid-cols-1 gap-3">
-                <div className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-800 rounded">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("Nouto", "Pickup")}
-                  </span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    10:30 - 10:29                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-800 rounded">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {t("Kotiinkuljetus", "Delivery")}
-                  </span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    10:30 - 10:29                  </span>
-                </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {formatBranchHours(firstBranch, language as 'fi' | 'en').map((dayHours, index) => (
+                  <div key={index} className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-800 rounded">
+                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                      {dayHours.day}
+                    </span>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                      {dayHours.hours}
+                    </span>
+                  </div>
+                ))}
               </div>
+
+              {branches && branches.length > 1 && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                  {t(
+                    "Näet kaikkien ravintoloidemme aukioloajat Ravintolat-sivulta",
+                    "See all branch hours on the Branches page"
+                  )}
+                </p>
+              )}
             </div>
           )}
 
-          <div className="border-t pt-4">
-            <h4 className="font-medium text-gray-900 dark:text-white mb-3">
-              {t("Voit myös", "You can also")}
-            </h4>
-            
-            <div className="grid grid-cols-1 gap-2">
-              <Button
-                variant="outline"
-                className="justify-start"
-                onClick={() => window.open('tel:+358123456789')}
-              >
-                <Phone className="w-4 h-4 mr-2" />
-                {t("Soita meille", "Call us")}
-              </Button>
-              
-              <Button
-                variant="outline"
-                className="justify-start"
-                onClick={() => window.open('https://maps.google.com', '_blank')}
-              >
-                <MapPin className="w-4 h-4 mr-2" />
-                {t("Käy paikan päällä", "Visit us")}
-              </Button>
+          {firstBranch && (
+            <div className="border-t pt-4">
+              <h4 className="font-medium text-gray-900 dark:text-white mb-3">
+                {t("Voit myös", "You can also")}
+              </h4>
+
+              <div className="grid grid-cols-1 gap-2">
+                <Button
+                  variant="outline"
+                  className="justify-start"
+                  onClick={() => window.open(`tel:${firstBranch.phone}`)}
+                >
+                  <Phone className="w-4 h-4 mr-2" />
+                  {t("Soita meille", "Call us")}: {firstBranch.phone}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="justify-start"
+                  onClick={() => window.open(
+                    `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${firstBranch.address}, ${firstBranch.postal_code} ${firstBranch.city}`)}`,
+                    '_blank'
+                  )}
+                >
+                  <MapPin className="w-4 h-4 mr-2" />
+                  {t("Käy paikan päällä", "Visit us")}
+                </Button>
+
+                {branches && branches.length > 1 && (
+                  <Button
+                    variant="outline"
+                    className="justify-start"
+                    onClick={() => {
+                      onClose();
+                      window.location.href = '/branches';
+                    }}
+                  >
+                    <Store className="w-4 h-4 mr-2" />
+                    {t("Katso kaikki ravintolat", "View all branches")}
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           <Button
             onClick={onClose}

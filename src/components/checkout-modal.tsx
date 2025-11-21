@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { DeliveryMap } from "@/components/delivery-map";
 import { StructuredAddressInput } from "@/components/structured-address-input";
 import { OrderSuccessModal } from "@/components/order-success-modal";
-import { isOnlineOrderingAvailable, isPickupAvailable, isDeliveryAvailable } from "@/lib/business-hours";
+import { isBranchOrderingAvailable, getBranchNextOpeningTime } from "@/lib/branch-business-hours";
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -156,32 +156,33 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Check business hours before processing order
-    if (!config || !isOnlineOrderingAvailable(config)) {
-      toast({
-        title: t("Tilaukset suljettu", "Orders closed"),
-        description: t("Verkkokauppa on suljettu", "Online ordering is closed"),
-        variant: "destructive",
-      });
-      onClose();
-      return;
-    }
 
-    // Check specific service availability
-    if (formData.orderType === "delivery" && !isDeliveryAvailable(config)) {
+    // Validate branch selection first
+    if (activeBranches.length > 0 && !formData.branchId) {
       toast({
-        title: t("Kotiinkuljetus suljettu", "Delivery closed"),
-        description: t("Kotiinkuljetus ei ole avoinna", "Delivery service is not available"),
+        title: t("Virhe", "Error"),
+        description: t("Valitse toimipiste", "Please select a branch"),
         variant: "destructive",
       });
       return;
     }
 
-    if (formData.orderType === "pickup" && !isPickupAvailable(config)) {
+    // Get the selected branch
+    const selectedBranch = activeBranches.find((b: any) => b.id === formData.branchId);
+
+    // Check branch-specific business hours before processing order
+    if (selectedBranch && !isBranchOrderingAvailable(selectedBranch)) {
+      const nextOpening = getBranchNextOpeningTime(selectedBranch);
+      const branchName = language === 'fi' ? selectedBranch.name : selectedBranch.name_en;
+
       toast({
-        title: t("Nouto suljettu", "Pickup closed"),
-        description: t("Noutopalvelu ei ole avoinna", "Pickup service is not available"),
+        title: t("Ravintola suljettu", "Restaurant closed"),
+        description: nextOpening
+          ? t(
+              `${branchName} on suljettu. Avautuu ${language === 'fi' ? nextOpening.day : nextOpening.dayEn} klo ${nextOpening.time}`,
+              `${branchName} is closed. Opens ${nextOpening.dayEn} at ${nextOpening.time}`
+            )
+          : t(`${branchName} on suljettu`, `${branchName} is closed`),
         variant: "destructive",
       });
       return;
@@ -191,16 +192,6 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
       toast({
         title: t("Virhe", "Error"),
         description: t("Lisää tuotteita koriin ensin", "Add items to cart first"),
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate branch selection if branches are available
-    if (activeBranches.length > 0 && !formData.branchId) {
-      toast({
-        title: t("Virhe", "Error"),
-        description: t("Valitse toimipiste", "Please select a branch"),
         variant: "destructive",
       });
       return;
@@ -279,14 +270,15 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
   useEffect(() => {
     if (isOpen && config) {
       const checkAvailability = () => {
-        setIsOrderingAvailable(isOnlineOrderingAvailable(config));
-        setIsPickupOpen(isPickupAvailable(config));
-        setIsDeliveryOpen(isDeliveryAvailable(config));
+        // For now, assume ordering is available if config exists
+        setIsOrderingAvailable(true);
+        setIsPickupOpen(true);
+        setIsDeliveryOpen(true);
         setIsRestaurantBusy(config.isBusy || false);
         
         console.log('🔍 Checkout: Checking availability', {
           isBusy: config.isBusy,
-          isOrderingAvailable: isOnlineOrderingAvailable(config)
+          isOrderingAvailable: true
         });
       };
       
