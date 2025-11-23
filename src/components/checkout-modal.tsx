@@ -69,10 +69,12 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
       methods.push(...customMethods);
     }
     
-    // Add online payment method at the end
-    methods.push(
-      { id: 'online', nameFi: 'Verkkomaksu', nameEn: 'Online Payment', enabled: true, icon: 'globe', requiresStripe: true }
-    );
+    // Add online payment method at the end ONLY if Stripe is enabled
+    if (dbSettings?.stripe_enabled) {
+      methods.push(
+        { id: 'online', nameFi: 'Verkkomaksu', nameEn: 'Online Payment', enabled: true, icon: 'globe', requiresStripe: true }
+      );
+    }
     
     setAvailablePaymentMethods(methods);
   }, [dbSettings]);
