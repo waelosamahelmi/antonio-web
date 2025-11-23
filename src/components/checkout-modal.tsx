@@ -47,22 +47,39 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
     icon?: string;
     requiresStripe?: boolean;
   }>>([
-    { id: 'cash', nameFi: 'Käteinen', nameEn: 'Cash', enabled: true, icon: 'banknote' },
-    { id: 'card', nameFi: 'Kortti', nameEn: 'Card', enabled: true, icon: 'credit-card' },
+    { id: 'online', nameFi: 'Verkkomaksu', nameEn: 'Online Payment', enabled: true, icon: 'globe', requiresStripe: true },
   ]);
   
   useEffect(() => {
+    // Start with custom payment methods from database
+    const methods: Array<{
+      id: string;
+      nameFi: string;
+      nameEn: string;
+      enabled: boolean;
+      icon?: string;
+      requiresStripe?: boolean;
+    }> = [];
+    
+    // Add custom payment methods from database first
     if (dbSettings?.payment_methods && Array.isArray(dbSettings.payment_methods)) {
-      const enabledMethods = dbSettings.payment_methods.filter((m: any) => m.enabled);
-      if (enabledMethods.length > 0) {
-        setAvailablePaymentMethods(enabledMethods);
-      }
+      const customMethods = dbSettings.payment_methods.filter((m: any) => 
+        m.enabled && m.id !== 'online' // Don't duplicate online payment
+      );
+      methods.push(...customMethods);
     }
+    
+    // Add online payment method at the end
+    methods.push(
+      { id: 'online', nameFi: 'Verkkomaksu', nameEn: 'Online Payment', enabled: true, icon: 'globe', requiresStripe: true }
+    );
+    
+    setAvailablePaymentMethods(methods);
   }, [dbSettings]);
 
   // Check if selected payment method requires Stripe
   const isStripePaymentMethod = (methodId: string) => {
-    return ['apple_pay', 'google_pay', 'stripe_link', 'klarna', 'ideal', 'sepa_debit'].includes(methodId);
+    return methodId === 'online' || ['apple_pay', 'google_pay', 'stripe_link', 'klarna', 'ideal', 'sepa_debit'].includes(methodId);
   };
   
   // Check if ordering is available
@@ -98,7 +115,7 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
     city: "",
     orderType: "delivery" as "delivery" | "pickup",
     branchId: null as number | null,
-    paymentMethod: "cash",
+    paymentMethod: "online",
     specialInstructions: "",
   });
 
@@ -277,7 +294,7 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
       const paymentIntent = await createPaymentIntent({
         amount: totalAmount,
         currency: 'eur',
-        paymentMethodTypes: getPaymentMethodTypes(formData.paymentMethod),
+        // Not specifying paymentMethodTypes - will use Stripe Dashboard settings
         metadata: {
           customerName: formData.customerName,
           customerPhone: formData.customerPhone,
@@ -297,25 +314,6 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
       console.error('Error creating payment intent:', error);
     } finally {
       setIsCreatingPaymentIntent(false);
-    }
-  };
-
-  const getPaymentMethodTypes = (methodId: string): string[] => {
-    switch (methodId) {
-      case 'apple_pay':
-        return ['card', 'apple_pay'];
-      case 'google_pay':
-        return ['card', 'google_pay'];
-      case 'stripe_link':
-        return ['card', 'link'];
-      case 'klarna':
-        return ['card', 'klarna'];
-      case 'ideal':
-        return ['card', 'ideal'];
-      case 'sepa_debit':
-        return ['card', 'sepa_debit'];
-      default:
-        return ['card'];
     }
   };
 
@@ -636,7 +634,7 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
                       className="flex items-center space-x-3 p-4 sm:p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-red-600 active:bg-gray-50 transition-colors touch-manipulation"
                     >
                       <RadioGroupItem value={method.id} className="text-red-600 w-5 h-5" />
-                      <PaymentMethodIcon methodId={method.id} className="w-12 h-8" />
+                      <PaymentMethodIcon methodId={method.icon || method.id} className="w-12 h-8" />
                       <span className="font-medium text-base sm:text-sm flex-1">
                         {language === "fi" ? method.nameFi : method.nameEn}
                       </span>

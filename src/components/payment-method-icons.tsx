@@ -1,5 +1,5 @@
 // Payment method icon components with real branding
-import { CreditCard, Banknote, Smartphone, Wallet } from 'lucide-react';
+import { CreditCard, Banknote, Smartphone, Wallet, Globe } from 'lucide-react';
 
 interface PaymentIconProps {
   className?: string;
@@ -80,6 +80,10 @@ export function WalletIcon({ className = "w-6 h-6" }: PaymentIconProps) {
   return <Wallet className={className} />;
 }
 
+export function OnlinePaymentIcon({ className = "w-6 h-6" }: PaymentIconProps) {
+  return <Globe className={className} />;
+}
+
 // Main component to select the right icon
 interface PaymentMethodIconProps {
   methodId: string;
@@ -88,6 +92,9 @@ interface PaymentMethodIconProps {
 
 export function PaymentMethodIcon({ methodId, className = "w-12 h-8" }: PaymentMethodIconProps) {
   switch (methodId.toLowerCase()) {
+    case 'online':
+    case 'globe':
+      return <OnlinePaymentIcon className={className} />;
     case 'apple_pay':
       return <ApplePayIcon className={className} />;
     case 'google_pay':

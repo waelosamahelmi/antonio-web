@@ -4,7 +4,6 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 export interface CreatePaymentIntentRequest {
   amount: number; // Total amount in euros (will be converted to cents)
   currency?: string;
-  paymentMethodTypes?: string[];
   metadata?: Record<string, string>;
 }
 
@@ -54,7 +53,6 @@ export async function createPaymentIntent(
       body: JSON.stringify({
         amount: params.amount, // Backend will convert to cents
         currency: params.currency || 'eur',
-        paymentMethodTypes: params.paymentMethodTypes || ['card'],
         metadata: params.metadata || {},
       }),
     });
