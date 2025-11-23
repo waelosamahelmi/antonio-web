@@ -19,6 +19,11 @@ import { DeliveryMap } from "@/components/delivery-map";
 import { StructuredAddressInput } from "@/components/structured-address-input";
 import { OrderSuccessModal } from "@/components/order-success-modal";
 import { isBranchOrderingAvailable, getBranchNextOpeningTime } from "@/lib/branch-business-hours";
+import { Elements } from '@stripe/react-stripe-js';
+import { getStripe } from '@/lib/stripe-client';
+import { createPaymentIntent } from '@/lib/stripe-api';
+import { StripePaymentForm } from '@/components/stripe-payment-form';
+import { PaymentMethodIcon } from '@/components/payment-method-icons';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -105,6 +110,12 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successOrderNumber, setSuccessOrderNumber] = useState<string>("");
+
+  // Stripe payment states
+  const [showStripePayment, setShowStripePayment] = useState(false);
+  const [stripeClientSecret, setStripeClientSecret] = useState<string>("");
+  const [stripePaymentIntentId, setStripePaymentIntentId] = useState<string>("");
+  const [isCreatingPaymentIntent, setIsCreatingPaymentIntent] = useState(false);
 
   // Compute branch location using useMemo to ensure it updates properly
   const branchLocation = useMemo(() => {
@@ -248,6 +259,88 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
       return;
     }
 
+    // Check if payment method requires Stripe - if so, show payment form first
+    if (isStripePaymentMethod(formData.paymentMethod)) {
+      await handleStripePayment();
+      return;
+    }
+
+    // For non-Stripe payments (cash, card), create order directly
+    await createOrderWithPaymentStatus();
+  };
+
+  const handleStripePayment = async () => {
+    setIsCreatingPaymentIntent(true);
+
+    try {
+      // Create payment intent
+      const paymentIntent = await createPaymentIntent({
+        amount: totalAmount,
+        currency: 'eur',
+        paymentMethodTypes: getPaymentMethodTypes(formData.paymentMethod),
+        metadata: {
+          customerName: formData.customerName,
+          customerPhone: formData.customerPhone,
+          orderType: formData.orderType,
+        },
+      });
+
+      setStripeClientSecret(paymentIntent.clientSecret);
+      setStripePaymentIntentId(paymentIntent.paymentIntentId);
+      setShowStripePayment(true);
+    } catch (error: any) {
+      toast({
+        title: t("Virhe", "Error"),
+        description: t("Maksun luominen epäonnistui", "Failed to create payment"),
+        variant: "destructive",
+      });
+      console.error('Error creating payment intent:', error);
+    } finally {
+      setIsCreatingPaymentIntent(false);
+    }
+  };
+
+  const getPaymentMethodTypes = (methodId: string): string[] => {
+    switch (methodId) {
+      case 'apple_pay':
+        return ['card', 'apple_pay'];
+      case 'google_pay':
+        return ['card', 'google_pay'];
+      case 'stripe_link':
+        return ['card', 'link'];
+      case 'klarna':
+        return ['card', 'klarna'];
+      case 'ideal':
+        return ['card', 'ideal'];
+      case 'sepa_debit':
+        return ['card', 'sepa_debit'];
+      default:
+        return ['card'];
+    }
+  };
+
+  const handlePaymentSuccess = async (paymentIntentId: string) => {
+    // Payment successful, now create the order
+    await createOrderWithPaymentStatus('paid', paymentIntentId);
+    setShowStripePayment(false);
+  };
+
+  const handlePaymentError = (error: string) => {
+    toast({
+      title: t("Maksu epäonnistui", "Payment failed"),
+      description: error,
+      variant: "destructive",
+    });
+    setShowStripePayment(false);
+  };
+
+  const handlePaymentCancel = () => {
+    setShowStripePayment(false);
+    setStripeClientSecret("");
+    setStripePaymentIntentId("");
+  };
+
+  const createOrderWithPaymentStatus = async (paymentStatus: string = 'pending', paymentIntentId?: string) => {
     try {
       const orderData = {
         ...formData,
@@ -255,6 +348,8 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
         deliveryFee: deliveryFee.toFixed(2),
         smallOrderFee: smallOrderFee.toFixed(2),
         totalAmount: totalAmount.toFixed(2),
+        paymentStatus: paymentStatus || (formData.paymentMethod === 'cash' ? 'pending' : 'paid'),
+        stripePaymentIntentId: paymentIntentId,
         items: items.map(item => ({
           menuItemId: item.menuItem.id,
           quantity: item.quantity,
@@ -533,21 +628,7 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
             >
               <div className="space-y-3">
                 {availablePaymentMethods.map((method) => {
-                  // Dynamically select icon based on method.icon value and method ID
-                  const PaymentIcon = 
-                    method.icon === 'banknote' ? Banknote :
-                    method.icon === 'credit-card' ? CreditCard :
-                    method.icon === 'smartphone' ? Smartphone :
-                    method.icon === 'wallet' ? Wallet :
-                    // Specific icons for Stripe payment methods
-                    method.id === 'apple_pay' ? Smartphone :
-                    method.id === 'google_pay' ? Wallet :
-                    method.id === 'stripe_link' ? Zap :
-                    method.id === 'klarna' || method.id === 'ideal' || method.id === 'sepa_debit' ? CreditCard :
-                    // Default icons for legacy data
-                    method.id === 'cash' ? Banknote :
-                    method.id === 'card' ? CreditCard : 
-                    CreditCard;
+                  const isStripeMethod = isStripePaymentMethod(method.id);
                   
                   return (
                     <Label 
@@ -555,10 +636,15 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
                       className="flex items-center space-x-3 p-4 sm:p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-red-600 active:bg-gray-50 transition-colors touch-manipulation"
                     >
                       <RadioGroupItem value={method.id} className="text-red-600 w-5 h-5" />
-                      <PaymentIcon className="w-6 h-6 sm:w-5 sm:h-5 text-blue-600" />
-                      <span className="font-medium text-base sm:text-sm">
+                      <PaymentMethodIcon methodId={method.id} className="w-12 h-8" />
+                      <span className="font-medium text-base sm:text-sm flex-1">
                         {language === "fi" ? method.nameFi : method.nameEn}
                       </span>
+                      {isStripeMethod && (
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                          {t("Online", "Online")}
+                        </span>
+                      )}
                     </Label>
                   );
                 })}
@@ -646,10 +732,12 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
             <Button
               type="submit"
               className="w-full sm:flex-1 h-12 sm:h-10 text-base sm:text-sm bg-red-600 hover:bg-red-700 active:bg-red-800 text-white touch-manipulation"
-              disabled={createOrder.isPending || !isOrderingAvailable}
+              disabled={createOrder.isPending || isCreatingPaymentIntent || !isOrderingAvailable}
             >
-              {createOrder.isPending 
+              {createOrder.isPending || isCreatingPaymentIntent
                 ? t("Lähetetään...", "Placing order...")
+                : isStripePaymentMethod(formData.paymentMethod)
+                ? t("Jatka maksuun", "Continue to Payment")
                 : t("Lähetä tilaus", "Place Order")
               }
             </Button>
@@ -665,6 +753,40 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
       orderType={formData.orderType}
       orderNumber={successOrderNumber}
     />
+
+    {/* Stripe Payment Modal */}
+    {showStripePayment && stripeClientSecret && dbSettings?.stripe_publishable_key && (
+      <Dialog open={showStripePayment} onOpenChange={setShowStripePayment}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-center">
+              {t("Suorita maksu", "Complete Payment")}
+            </DialogTitle>
+          </DialogHeader>
+          <Elements
+            stripe={getStripe(dbSettings.stripe_publishable_key)}
+            options={{
+              clientSecret: stripeClientSecret,
+              appearance: {
+                theme: 'stripe',
+                variables: {
+                  colorPrimary: '#0066cc',
+                  borderRadius: '8px',
+                },
+              },
+            }}
+          >
+            <StripePaymentForm
+              clientSecret={stripeClientSecret}
+              amount={totalAmount}
+              onSuccess={handlePaymentSuccess}
+              onError={handlePaymentError}
+              onCancel={handlePaymentCancel}
+            />
+          </Elements>
+        </DialogContent>
+      </Dialog>
+    )}
   </>
   );
 }

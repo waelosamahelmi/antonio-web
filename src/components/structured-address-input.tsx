@@ -118,7 +118,18 @@ export function StructuredAddressInput({
         const leafletMap = (mapRef.current as any)?.leafletMap;
         if (leafletMap) {
           console.log('Destroying old map...');
-          leafletMap.remove(); // Properly destroy Leaflet map
+          try {
+            // Stop any ongoing animations
+            leafletMap.stop();
+            // Remove all layers
+            leafletMap.eachLayer((layer: any) => {
+              leafletMap.removeLayer(layer);
+            });
+            // Remove the map
+            leafletMap.remove();
+          } catch (e) {
+            console.warn('Error during map cleanup:', e);
+          }
           (mapRef.current as any).leafletMap = null;
         }
         // Clear the container
