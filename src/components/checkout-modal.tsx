@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bike, ShoppingBag, CreditCard, Banknote, AlertTriangle } from "lucide-react";
+import { Bike, ShoppingBag, CreditCard, Banknote, AlertTriangle, Smartphone, Wallet, Zap } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { DeliveryMap } from "@/components/delivery-map";
 import { StructuredAddressInput } from "@/components/structured-address-input";
@@ -30,8 +30,28 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
   const { language, t } = useLanguage();
   const { items, totalPrice, clearCart } = useCart();
   const { toast } = useToast();
-  const { config } = useRestaurantSettings();
+  const { config, dbSettings } = useRestaurantSettings();
   const createOrder = useCreateOrder();
+  
+  // Load payment methods from database
+  const [availablePaymentMethods, setAvailablePaymentMethods] = useState([
+    { id: 'cash', nameFi: 'Käteinen', nameEn: 'Cash', enabled: true, icon: 'banknote' },
+    { id: 'card', nameFi: 'Kortti', nameEn: 'Card', enabled: true, icon: 'credit-card' },
+  ]);
+  
+  useEffect(() => {
+    if (dbSettings?.payment_methods && Array.isArray(dbSettings.payment_methods)) {
+      const enabledMethods = dbSettings.payment_methods.filter((m: any) => m.enabled);
+      if (enabledMethods.length > 0) {
+        setAvailablePaymentMethods(enabledMethods);
+      }
+    }
+  }, [dbSettings]);
+
+  // Check if selected payment method requires Stripe
+  const isStripePaymentMethod = (methodId: string) => {
+    return ['apple_pay', 'google_pay', 'stripe_link', 'klarna', 'ideal', 'sepa_debit'].includes(methodId);
+  };
   
   // Check if ordering is available
   const [isOrderingAvailable, setIsOrderingAvailable] = useState(true);
@@ -505,16 +525,36 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
               onValueChange={(value) => handleInputChange("paymentMethod", value)}
             >
               <div className="space-y-3">
-                <Label className="flex items-center space-x-3 p-4 sm:p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-red-600 active:bg-gray-50 transition-colors touch-manipulation">
-                  <RadioGroupItem value="cash" className="text-red-600 w-5 h-5" />
-                  <Banknote className="w-6 h-6 sm:w-5 sm:h-5 text-green-600" />
-                  <span className="font-medium text-base sm:text-sm">{t("Käteinen", "Cash")}</span>
-                </Label>
-                <Label className="flex items-center space-x-3 p-4 sm:p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-red-600 active:bg-gray-50 transition-colors touch-manipulation">
-                  <RadioGroupItem value="card" className="text-red-600 w-5 h-5" />
-                  <CreditCard className="w-6 h-6 sm:w-5 sm:h-5 text-blue-600" />
-                  <span className="font-medium text-base sm:text-sm">{t("Kortti", "Card")}</span>
-                </Label>
+                {availablePaymentMethods.map((method) => {
+                  // Dynamically select icon based on method.icon value and method ID
+                  const PaymentIcon = 
+                    method.icon === 'banknote' ? Banknote :
+                    method.icon === 'credit-card' ? CreditCard :
+                    method.icon === 'smartphone' ? Smartphone :
+                    method.icon === 'wallet' ? Wallet :
+                    // Specific icons for Stripe payment methods
+                    method.id === 'apple_pay' ? Smartphone :
+                    method.id === 'google_pay' ? Wallet :
+                    method.id === 'stripe_link' ? Zap :
+                    method.id === 'klarna' || method.id === 'ideal' || method.id === 'sepa_debit' ? CreditCard :
+                    // Default icons for legacy data
+                    method.id === 'cash' ? Banknote :
+                    method.id === 'card' ? CreditCard : 
+                    CreditCard;
+                  
+                  return (
+                    <Label 
+                      key={method.id}
+                      className="flex items-center space-x-3 p-4 sm:p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-red-600 active:bg-gray-50 transition-colors touch-manipulation"
+                    >
+                      <RadioGroupItem value={method.id} className="text-red-600 w-5 h-5" />
+                      <PaymentIcon className="w-6 h-6 sm:w-5 sm:h-5 text-blue-600" />
+                      <span className="font-medium text-base sm:text-sm">
+                        {language === "fi" ? method.nameFi : method.nameEn}
+                      </span>
+                    </Label>
+                  );
+                })}
               </div>
             </RadioGroup>
           </div>
