@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLanguage } from "@/lib/language-context";
-import { useRestaurant } from "@/lib/restaurant-context";
 import { useQuery } from "@tanstack/react-query";
 import { sendMarketingEmail } from "@/lib/email-service";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -132,7 +131,6 @@ const emailTemplates = {
 
 export function EmailMarketing() {
   const { t } = useLanguage();
-  const { config } = useRestaurant();
   const { toast } = useToast();
   
   const [selectedTemplate, setSelectedTemplate] = useState<keyof typeof emailTemplates>("promotional");
@@ -181,9 +179,9 @@ export function EmailMarketing() {
       html = html.replace('{{SUBTITLE}}', emailSubject);
       html = html.replace('{{CONTENT}}', emailContent.replace(/\n/g, '<br>'));
       html = html.replace('{{LINK}}', emailLink || '#');
-      html = html.replace(/{{RESTAURANT_NAME}}/g, config.name);
-      html = html.replace(/{{RESTAURANT_ADDRESS}}/g, `${config.address.street}, ${config.address.city}`);
-      html = html.replace(/{{RESTAURANT_PHONE}}/g, config.phone);
+      html = html.replace(/{{RESTAURANT_NAME}}/g, 'Restaurant Babylon');
+      html = html.replace(/{{RESTAURANT_ADDRESS}}/g, 'Lahti, Finland');
+      html = html.replace(/{{RESTAURANT_PHONE}}/g, '+358 3 589 9089');
 
       // Get recipient emails
       let recipients: string[] = [];
@@ -411,7 +409,7 @@ export function EmailMarketing() {
                 )}
               </div>
               <div className="bg-gray-100 p-4 text-center text-sm text-gray-600">
-                {config.name} | {config.address.city}, {config.address.country}
+                Restaurant Babylon | Lahti, Finland
               </div>
             </div>
           </div>

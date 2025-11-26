@@ -1,12 +1,10 @@
 import { useLanguage } from "@/lib/language-context";
-import { useRestaurant } from "@/lib/restaurant-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Shield, Eye, Lock, Database } from "lucide-react";
 
 export default function Privacy() {
   const { t } = useLanguage();
-  const { config } = useRestaurant();
 
   const goBack = () => {
     window.history.back();
@@ -180,11 +178,11 @@ export default function Privacy() {
               </p>
               <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mt-4">
                 <p>
-                  <strong>{t("Tietosuojavastaava", "Data Protection Officer")}</strong><br />
-                  {config.name}<br />
-                  {config.address.street}, {config.address.postalCode} {config.address.city}<br />
-                  {t("Sähköposti", "Email")}: {config.email}<br />
-                  {t("Puhelin", "Phone")}: {config.phone}
+                  <strong>Tietosuojavastaava / Data Protection Officer</strong><br />
+                  Ravintola Babylon<br />
+                  Vapaudenkatu 28, 15140 Lahti<br />
+                  Sähköposti: info@ravintolababylon.fi<br />
+                  Puhelin: +35835899089
                 </p>
               </div>
             </CardContent>

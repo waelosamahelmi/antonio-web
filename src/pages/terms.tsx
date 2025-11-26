@@ -1,12 +1,10 @@
 import { useLanguage } from "@/lib/language-context";
-import { useRestaurant } from "@/lib/restaurant-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
 export default function Terms() {
   const { t } = useLanguage();
-  const { config } = useRestaurant();
 
   const goBack = () => {
     window.history.back();
@@ -41,8 +39,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  `${config.name}n verkkopalvelu on tarkoitettu ruoan tilaamiseen ja ravintolan tietojen katseluun. Käyttämällä palvelua hyväksyt nämä käyttöehdot.`,
-                  `${config.nameEn}'s web service is intended for food ordering and viewing restaurant information. By using the service, you accept these terms of use.`
+                  "Ravintola Babylonn verkkopalvelu on tarkoitettu ruoan tilaamiseen ja ravintolan tietojen katseluun. Käyttämällä palvelua hyväksyt nämä käyttöehdot.",
+                  "Ravintola Babylon's web service is intended for food ordering and viewing restaurant information. By using the service, you accept these terms of use."
                 )}
               </p>
             </CardContent>
@@ -74,8 +72,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  `Toimitusaika on arvio ja voi vaihdella ruuhka-aikoina. Toimitamme ${config.address.city}n ja lähialueiden alueella. Toimitusmaksut vaihtelevat etäisyyden mukaan.`,
-                  `Delivery time is an estimate and may vary during peak hours. We deliver in the ${config.address.city} and surrounding areas. Delivery fees vary by distance.`
+                  "Toimitusaika on arvio ja voi vaihdella ruuhka-aikoina. Toimitamme Lahden ja lähialueiden alueella. Toimitusmaksut vaihtelevat etäisyyden mukaan.",
+                  "Delivery time is an estimate and may vary during peak hours. We deliver in the Lahti and surrounding areas. Delivery fees vary by distance."
                 )}
               </p>
             </CardContent>
@@ -102,8 +100,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  `${config.name} ei vastaa mahdollisista teknisistä ongelmista verkkopalvelussa. Reklamaatiot ruoasta tulee tehdä 24 tunnin sisällä toimituksesta.`,
-                  `${config.nameEn} is not responsible for possible technical problems in the web service. Food complaints must be made within 24 hours of delivery.`
+                  "Ravintola Babylon ei vastaa mahdollisista teknisistä ongelmista verkkopalvelussa. Reklamaatiot ruoasta tulee tehdä 24 tunnin sisällä toimituksesta.",
+                  "Ravintola Babylon is not responsible for possible technical problems in the web service. Food complaints must be made within 24 hours of delivery."
                 )}
               </p>
             </CardContent>
@@ -121,10 +119,10 @@ export default function Terms() {
                 )}
               </p>
               <p>
-                <strong>{config.name}</strong><br />
-                {config.address.street}, {config.address.postalCode} {config.address.city}<br />
-                {t("Puhelin", "Phone")}: {config.phone}<br />
-                {t("Sähköposti", "Email")}: {config.email}
+                <strong>Ravintola Babylon</strong><br />
+                Vapaudenkatu 28, 15140 Lahti<br />
+                Puhelin: +35835899089<br />
+                Sähköposti: info@ravintolababylon.fi
               </p>
             </CardContent>
           </Card>
