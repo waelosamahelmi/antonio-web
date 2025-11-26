@@ -61,7 +61,15 @@ export default function Menu() {
   // Check ordering availability based on branch hours
   useEffect(() => {
     const checkOrderingStatus = () => {
-      // Check if restaurant is busy first
+      // Check if restaurant is forced open (override all hours)
+      if (config && config.isOpen) {
+        console.log('✅ Menu: Restaurant is FORCE OPEN - enabling orders regardless of hours');
+        setIsOrderingAvailable(true);
+        setShowClosedModal(false);
+        return;
+      }
+
+      // Check if restaurant is busy
       if (config && config.isBusy) {
         console.log('⚠️ Menu: Restaurant is BUSY - disabling orders');
         setIsOrderingAvailable(false);
@@ -78,7 +86,8 @@ export default function Menu() {
         console.log('🔍 Menu: Checking branch ordering status', {
           totalBranches: branches.length,
           anyBranchOpen,
-          isBusy: config?.isBusy
+          isBusy: config?.isBusy,
+          isForceOpen: config?.isOpen
         });
 
         setIsOrderingAvailable(anyBranchOpen);
