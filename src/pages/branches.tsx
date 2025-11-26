@@ -1,6 +1,9 @@
 import { useLanguage } from "@/lib/language-context";
 import { useBranches, useBranchStatus, type Branch } from "@/hooks/use-branches";
 import { UniversalHeader } from "@/components/universal-header";
+import { usePageVariant } from "@/hooks/use-page-variant";
+import { useRestaurant } from "@/lib/restaurant-context";
+import { cn } from "@/lib/utils";
 import { Footer } from "@/components/footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Clock, Loader2, Store } from "lucide-react";

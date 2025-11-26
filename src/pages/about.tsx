@@ -1,12 +1,21 @@
 import { useLanguage } from "@/lib/language-context";
 import { useRestaurant } from "@/lib/restaurant-context";
 import { AboutSection } from "@/components/about-section";
+import { usePageVariant } from "@/hooks/use-page-variant";
+import { cn } from "@/lib/utils";
 import { UniversalHeader } from "@/components/universal-header";
 import { Footer } from "@/components/footer";
 
 export default function About() {
   const { t } = useLanguage();
   const { config } = useRestaurant();
+  const variant = usePageVariant('about');
+  
+  // Get theme colors
+  const theme = config?.theme || {};
+  const primaryColor = theme.primary || '#8B4513';
+  const secondaryColor = theme.secondary || '#FF8C00';
+  const fonts = theme.fonts || { heading: 'Inter', body: 'Inter' };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-stone-900">

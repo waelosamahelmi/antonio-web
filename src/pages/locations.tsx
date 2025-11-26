@@ -1,6 +1,9 @@
 import { useLanguage } from "@/lib/language-context";
 import { useLocationsByRegion } from "@/hooks/use-locations";
 import { UniversalHeader } from "@/components/universal-header";
+import { usePageVariant } from "@/hooks/use-page-variant";
+import { useRestaurant } from "@/lib/restaurant-context";
+import { cn } from "@/lib/utils";
 import { Footer } from "@/components/footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Store, ShoppingBag, Building2, ShoppingCart, Building, Loader2 } from "lucide-react";
@@ -8,7 +11,15 @@ import * as LucideIcons from "lucide-react";
 
 export default function Locations() {
   const { t } = useLanguage();
+  const { config } = useRestaurant();
   const { data: locationsByRegion, isLoading } = useLocationsByRegion();
+  const variant = usePageVariant('about');
+  
+  // Get theme colors
+  const theme = config?.theme || {};
+  const primaryColor = theme.primary || '#8B4513';
+  const secondaryColor = theme.secondary || '#FF8C00';
+  const fonts = theme.fonts || { heading: 'Inter', body: 'Inter' };
 
   const getIcon = (iconName: string) => {
     const icons: Record<string, any> = {

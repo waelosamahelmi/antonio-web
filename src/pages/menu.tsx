@@ -3,6 +3,8 @@ import { useCategories, useMenuItems } from "@/hooks/use-menu";
 import { useLanguage } from "@/lib/language-context";
 import { useCart } from "@/lib/cart-context";
 import { useBranches } from "@/hooks/use-branches";
+import { usePageVariant } from "@/hooks/use-page-variant";
+import { cn } from "@/lib/utils";
 import { useActivePromotions, calculatePromotionDiscount } from "@/hooks/use-promotions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -47,6 +49,13 @@ export default function Menu() {
   const { addItem } = useCart();
   const { config } = useRestaurantSettings();
   const { data: promotions } = useActivePromotions();
+  const variant = usePageVariant('menu');
+  
+  // Get theme colors with null safety
+  const theme = config?.theme || {};
+  const primaryColor = theme.primary || '#8B4513';
+  const secondaryColor = theme.secondary || '#FF8C00';
+  const fonts = theme.fonts || { heading: 'Inter', body: 'Inter' };
   
   const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");

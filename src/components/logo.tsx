@@ -5,15 +5,24 @@ import * as LucideIcons from "lucide-react";
 export function Logo({ className = "h-12" }: { className?: string }) {
   const { config } = useRestaurant();
   
+  // Return early if config is not loaded yet
+  if (!config) {
+    return (
+      <div className={`flex items-center space-x-3 ${className}`}>
+        <LucideIcons.UtensilsCrossed className="w-10 h-10 text-red-600 dark:text-red-400" />
+      </div>
+    );
+  }
+  
   // Debug logging
   console.log('Logo config:', config.logo);
   
   // Get the icon component dynamically
-  const IconComponent = (LucideIcons as any)[config.logo.icon] || LucideIcons.UtensilsCrossed;
+  const IconComponent = (LucideIcons as any)[config.logo?.icon] || LucideIcons.UtensilsCrossed;
 
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
-      {config.logo.imageUrl ? (
+      {config.logo?.imageUrl ? (
         <img 
           src={config.logo.imageUrl} 
           alt={config.name} 
@@ -24,7 +33,7 @@ export function Logo({ className = "h-12" }: { className?: string }) {
       ) : (
         <div className="flex items-center space-x-3">
           <IconComponent className="w-10 h-10 text-red-600 dark:text-red-400" />
-          {config.logo.showText && (
+          {config.logo?.showText && (
             <span className="text-2xl font-bold text-gray-900 dark:text-white">
               {config.name}
             </span>

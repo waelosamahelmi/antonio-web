@@ -134,7 +134,13 @@ export interface RestaurantConfig {
     background: string;
     foreground: string;
     
-    // Complete light mode theme (optional for backward compatibility)
+    // Font configuration
+    fonts?: {
+      heading: string;
+      body: string;
+    };
+    
+    // Light mode colors (optional for backward compatibility)
     light?: {
       background: string;
       foreground: string;
@@ -179,6 +185,17 @@ export interface RestaurantConfig {
       input: string;
       ring: string;
     };
+  };
+  
+  // Page Layout Variants
+  pageLayoutVariants?: {
+    home: string;
+    menu: string;
+    about: string;
+    header: string;
+    footer: string;
+    cart: string;
+    checkout: string;
   };
   
   // Logo Configuration

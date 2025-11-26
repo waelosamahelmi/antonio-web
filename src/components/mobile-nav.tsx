@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLanguage } from "@/lib/language-context";
 import { useCart } from "@/lib/cart-context";
+import { useRestaurant } from "@/lib/restaurant-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -27,6 +28,7 @@ export function MobileNav() {
   const { t, language, setLanguage } = useLanguage();
   const { totalItems } = useCart();
   const { theme, setTheme } = useTheme();
+  const { config } = useRestaurant();
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");

@@ -2,6 +2,9 @@ import { useState } from "react";
 import { useLanguage } from "@/lib/language-context";
 import { useBranches } from "@/hooks/use-branches";
 import { useLounasMenus, getCurrentWeek } from "@/hooks/use-lounas-menus";
+import { usePageVariant } from "@/hooks/use-page-variant";
+import { useRestaurant } from "@/lib/restaurant-context";
+import { cn } from "@/lib/utils";
 import { useLounasSettings, formatTime } from "@/hooks/use-lounas-settings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,7 +22,15 @@ import type { LounasMenu } from "@/hooks/use-lounas-menus";
 
 export default function Lounas() {
   const { t, language } = useLanguage();
+  const { config } = useRestaurant();
   const { data: allBranches, isLoading: branchesLoading } = useBranches();
+  const variant = usePageVariant('menu');
+  
+  // Get theme colors
+  const theme = config?.theme || {};
+  const primaryColor = theme.primary || '#8B4513';
+  const secondaryColor = theme.secondary || '#FF8C00';
+  const fonts = theme.fonts || { heading: 'Inter', body: 'Inter' };
 
   const currentWeekInfo = getCurrentWeek();
   const [selectedBranchId, setSelectedBranchId] = useState<number>(0);

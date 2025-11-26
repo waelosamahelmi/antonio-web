@@ -7,6 +7,8 @@ import { LanguageProvider } from "@/lib/language-context";
 import { CartProvider } from "@/lib/cart-context";
 import { ThemeProvider } from "@/lib/theme-context";
 import { RestaurantProvider } from "@/lib/restaurant-context";
+import { FontLoader } from "@/components/font-loader";
+import { ThemeInjector } from "@/components/theme-injector";
 import Home from "@/pages/home";
 import Menu from "@/pages/menu";
 import About from "@/pages/about";
@@ -41,6 +43,8 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RestaurantProvider>
+        <FontLoader />
+        <ThemeInjector />
         <ThemeProvider>
           <LanguageProvider>
             <CartProvider>

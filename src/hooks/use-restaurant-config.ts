@@ -57,6 +57,10 @@ export interface DatabaseRestaurantConfig {
     error: string;
     background: string;
     foreground: string;
+    fonts?: {
+      heading: string;
+      body: string;
+    };
     light?: {
       background: string;
       foreground: string;
@@ -99,6 +103,15 @@ export interface DatabaseRestaurantConfig {
       input: string;
       ring: string;
     };
+  };
+  page_layout_variants: {
+    home: string;
+    menu: string;
+    about: string;
+    header: string;
+    footer: string;
+    cart: string;
+    checkout: string;
   };
   logo: {
     icon: string;
@@ -155,6 +168,7 @@ function convertDatabaseConfigToRestaurantConfig(dbConfig: DatabaseRestaurantCon
     services: dbConfig.services,
     delivery: dbConfig.delivery_config,
     theme: dbConfig.theme,
+    pageLayoutVariants: dbConfig.page_layout_variants,
     logo: dbConfig.logo,
     about: dbConfig.about,
     hero: dbConfig.hero,
@@ -183,6 +197,7 @@ export function convertRestaurantConfigToDatabaseConfig(config: RestaurantConfig
     services: config.services,
     delivery_config: config.delivery,
     theme: config.theme,
+    page_layout_variants: config.pageLayoutVariants,
     logo: config.logo,
     about: config.about,
     hero: config.hero,
