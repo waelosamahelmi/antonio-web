@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "@/lib/language-context";
+import { useRestaurant } from "@/lib/restaurant-context";
 import { useCart } from "@/lib/cart-context";
 import { useTheme } from "@/lib/theme-context";
 import { Button } from "@/components/ui/button";
@@ -12,8 +13,14 @@ interface HeaderProps {
 
 export function Header({ onCartClick }: HeaderProps) {
   const { language, setLanguage, t } = useLanguage();
+  const { config } = useRestaurant();
   const { totalItems } = useCart();
   const { theme, setTheme } = useTheme();
+  
+  // Get admin URL from config website or environment variable
+  const adminUrl = config.website ? 
+    config.website.replace('www.', 'admin.').replace('https://', 'https://admin.') : 
+    import.meta.env.VITE_ADMIN_URL || window.location.origin.replace('www', 'admin');
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -48,8 +55,8 @@ export function Header({ onCartClick }: HeaderProps) {
               </div>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                  <span className="hidden sm:inline">Ravintola Babylon</span>
-                  <span className="sm:hidden">babylon</span>
+                  <span className="hidden sm:inline">{config.name}</span>
+                  <span className="sm:hidden">{config.name.split(' ')[1] || config.name}</span>
                 </h1>
               </div>
             </div>
@@ -75,7 +82,7 @@ export function Header({ onCartClick }: HeaderProps) {
                 {t("Yhteystiedot", "Contact")}
               </a>
               <a
-                href="https://admin.ravintolababylon.fi"
+                href={adminUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-sm"
@@ -220,7 +227,7 @@ export function Header({ onCartClick }: HeaderProps) {
                   {t("Yhteystiedot", "Contact")}
                 </a>
                 <a
-                  href="https://admin.ravintolababylon.fi"
+                  href={adminUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium py-2 text-sm border-t border-gray-200 dark:border-gray-700 pt-4 mt-2"

@@ -170,7 +170,7 @@ export default function Home() {
               </Card>
             )}
 
-            <a href="tel:+35837812222">
+            <a href={`tel:${config.phone}`}>
               <Card className="group cursor-pointer transition-all duration-700 hover:shadow-2xl border-0 overflow-hidden relative animate-slide-up bg-white dark:bg-stone-800">
                 <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 transform translate-x-full group-hover:translate-x-0 transition-transform duration-700"></div>
                 <CardContent className="p-0 relative z-10">

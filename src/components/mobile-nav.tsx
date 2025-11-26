@@ -140,7 +140,7 @@ export function MobileNav() {
                 <SheetContent side="right" className="w-80">
                   <SheetHeader>
                     <SheetTitle className="text-left">
-                      Ravintola Babylon
+                      {config.name}
                     </SheetTitle>
                   </SheetHeader>
                   

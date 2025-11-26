@@ -1,5 +1,7 @@
 // Thermal printer integration for local network and Bluetooth connectivity
 
+import type { RestaurantConfig } from '../config/restaurant-config';
+
 // Extend Navigator interface for Bluetooth support
 declare global {
   interface Navigator {
@@ -425,13 +427,19 @@ class ThermalPrinterService {
   }
 
   // Generate test receipt
-  private generateTestReceipt(): string {
+  private generateTestReceipt(config?: RestaurantConfig): string {
+    const name = config?.name || 'Ravintola Babylon';
+    const street = config?.address?.street || 'Vapaudenkatu 28';
+    const postalCode = config?.address?.postalCode || '15140';
+    const city = config?.address?.city || 'Lahti';
+    const phone = config?.phone || '+358-3781-2222';
+    
     return `
 ==============================
-        Ravintola Babylon
+        ${name}
 ==============================
-      Vapaudenkatu 28, 15140 Lahti
-        +358-3781-2222
+      ${street}, ${postalCode} ${city}
+        ${phone}
 
 ------------------------------
            TEST PRINT
@@ -447,7 +455,15 @@ printer connectivity.
   }
 
   // Generate order receipt with ESC/POS commands
-  generateOrderReceipt(order: any): string {
+  generateOrderReceipt(order: any, config?: RestaurantConfig): string {
+    const name = config?.name || 'Ravintola Babylon';
+    const street = config?.address?.street || 'Vapaudenkatu 28';
+    const postalCode = config?.address?.postalCode || '15140';
+    const city = config?.address?.city || 'Lahti';
+    const phone = config?.phone || '+358-3781-2222';
+    const email = config?.email || 'info@ravintolababylon.fi';
+    const website = config?.social_media?.website || 'www.ravintolababylon.fi';
+    
     const date = new Date(order.createdAt || new Date());
     const escInit = '\x1B\x40'; // Initialize printer
     const escCenter = '\x1B\x61\x01'; // Center align
@@ -464,18 +480,18 @@ printer connectivity.
     
     // Logo/Header - Improved design
     receipt += escCenter + escBold + escDoubleLarge;
-    receipt += '***  BABYLON  ***' + lineFeed;
+    receipt += `***  ${name.toUpperCase().split(' ').slice(-1)[0] || 'RESTAURANT'}  ***` + lineFeed;
     receipt += escNormal + escBoldOff;
     receipt += escCenter + escLarge;
     receipt += 'Ravintola & Pizzeria' + lineFeed;
     receipt += escNormal;
     receipt += '==============================' + lineFeed;
     receipt += escBold;
-    receipt += 'Vapaudenkatu 28, 15140 Lahti' + lineFeed;
-    receipt += 'Puh: +358-3781-2222' + lineFeed;
+    receipt += `${street}, ${postalCode} ${city}` + lineFeed;
+    receipt += `Puh: ${phone}` + lineFeed;
     receipt += escBoldOff;
-    receipt += 'info@ravintolababylon.fi' + lineFeed;
-    receipt += 'www.ravintolababylon.fi' + lineFeed;
+    receipt += email + lineFeed;
+    receipt += website + lineFeed;
     receipt += '==============================' + lineFeed;
     receipt += lineFeed;
     
@@ -648,9 +664,9 @@ printer connectivity.
     receipt += '==============================' + lineFeed;
     receipt += lineFeed;
     receipt += escBold;
-    receipt += 'RAVINTOLA BABYLON' + lineFeed;
+    receipt += name.toUpperCase() + lineFeed;
     receipt += escBoldOff;
-    receipt += 'Vapaudenkatu 28, 15140 Lahti' + lineFeed;
+    receipt += `${street}, ${postalCode} ${city}` + lineFeed;
     receipt += lineFeed;
     receipt += escBold;
     receipt += 'AUKIOLOAJAT / OPENING HOURS' + lineFeed;
@@ -659,8 +675,8 @@ printer connectivity.
     receipt += 'Kotiinkuljetus / Delivery:' + lineFeed;
     receipt += 'Ma-To, Pe-Su: 10:00-19:30' + lineFeed;
     receipt += lineFeed;
-    receipt += 'Puh / Tel: +358-3781-2222' + lineFeed;
-    receipt += 'www.ravintolababylon.fi' + lineFeed;
+    receipt += `Puh / Tel: ${phone}` + lineFeed;
+    receipt += website + lineFeed;
     receipt += lineFeed;
     receipt += escBold;
     receipt += 'Seuraa meitä / Follow us:' + lineFeed;
@@ -677,7 +693,7 @@ printer connectivity.
   }
 
   // Generate kitchen receipt with ESC/POS commands
-  generateKitchenReceipt(order: any): string {
+  generateKitchenReceipt(order: any, config?: RestaurantConfig): string {
     const date = new Date(order.createdAt || new Date());
     const escInit = '\x1B\x40'; // Initialize printer
     const escCenter = '\x1B\x61\x01'; // Center align
