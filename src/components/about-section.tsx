@@ -1,5 +1,6 @@
 import { useLanguage } from "@/lib/language-context";
 import { useRestaurant } from "@/lib/restaurant-context";
+import { useBranches } from "@/hooks/use-branches";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import * as LucideIcons from "lucide-react";
@@ -18,6 +19,7 @@ import {
 export function AboutSection() {
   const { t } = useLanguage();
   const { config } = useRestaurant();
+  const { data: branches } = useBranches();
 
   return (
     <section className="py-20 bg-gradient-to-b from-gray-50 to-white dark:from-stone-900 dark:to-stone-800 relative overflow-hidden">
@@ -169,28 +171,115 @@ export function AboutSection() {
                 </h3>
               </div>
               
-              <div className="space-y-4">
-                <div className="flex items-start gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
-                  <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-5 h-5 text-red-600" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-900 dark:text-white mb-1">{config.address.street}</div>
-                    <div className="text-gray-600 dark:text-gray-400">
-                      {config.address.postalCode} {config.address.city}
+              <div className="space-y-6">
+                {/* All Branches */}
+                {branches && branches.length > 0 ? (
+                  branches.map((branch, index) => (
+                    <div key={branch.id} className="space-y-3">
+                      {/* Branch Name */}
+                      {branches.length > 1 && (
+                        <div className="flex items-center gap-2 mb-3">
+                          <Badge className="bg-gradient-to-r from-orange-600 to-red-600 text-white font-bold px-3 py-1">
+                            {branch.name}
+                          </Badge>
+                        </div>
+                      )}
+                      
+                      {/* Address */}
+                      <div className="flex items-start gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
+                        <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-5 h-5 text-red-600" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-gray-900 dark:text-white mb-1">{branch.address}</div>
+                          <div className="text-gray-600 dark:text-gray-400">
+                            {branch.postal_code} {branch.city}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Phone */}
+                      {branch.phone && (
+                        <div className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
+                          <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Phone className="w-5 h-5 text-green-600" />
+                          </div>
+                          <a href={`tel:${branch.phone}`} className="text-lg font-bold text-gray-900 dark:text-white hover:text-red-600 transition-colors">
+                            {branch.phone}
+                          </a>
+                        </div>
+                      )}
+                      
+                      {/* Opening Hours */}
+                      {branch.opening_hours && (
+                        <div className="p-4 bg-gradient-to-r from-orange-600 to-red-600 rounded-xl shadow-lg text-white">
+                          <h4 className="font-black text-sm mb-2 flex items-center gap-2">
+                            <Clock className="w-4 h-4" />
+                            {t("Aukioloajat", "Opening Hours")}
+                          </h4>
+                          <div className="text-sm font-medium space-y-1">
+                            {Object.entries(branch.opening_hours).map(([day, hours]: [string, any]) => (
+                              <div key={day} className="flex justify-between">
+                                <span className="capitalize">{t(day, day)}:</span>
+                                <span className="font-bold">
+                                  {hours.closed ? t("Suljettu", "Closed") : `${hours.open} - ${hours.close}`}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Divider between branches */}
+                      {index < branches.length - 1 && (
+                        <div className="border-t border-gray-200 dark:border-gray-700 my-4"></div>
+                      )}
                     </div>
-                  </div>
-                </div>
+                  ))
+                ) : (
+                  /* Fallback to config if no branches */
+                  <>
+                    <div className="flex items-start gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
+                      <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <MapPin className="w-5 h-5 text-red-600" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-gray-900 dark:text-white mb-1">{config.address.street}</div>
+                        <div className="text-gray-600 dark:text-gray-400">
+                          {config.address.postalCode} {config.address.city}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
+                      <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Phone className="w-5 h-5 text-green-600" />
+                      </div>
+                      <a href={`tel:${config.phone}`} className="text-lg font-bold text-gray-900 dark:text-white hover:text-red-600 transition-colors">
+                        {config.phone}
+                      </a>
+                    </div>
+                    
+                    {config.hours?.general?.monday && (
+                      <div className="p-4 bg-gradient-to-r from-orange-600 to-red-600 rounded-xl shadow-lg text-white">
+                        <h4 className="font-black text-sm mb-2 flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          {t("Aukioloajat", "Opening Hours")}
+                        </h4>
+                        <div className="text-sm font-medium space-y-1">
+                          {Object.entries(config.hours.general).map(([day, hours]: [string, any]) => (
+                            <div key={day} className="flex justify-between">
+                              <span className="capitalize">{t(day, day)}:</span>
+                              <span className="font-bold">{hours.open} - {hours.close}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
                 
-                <div className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
-                  <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-5 h-5 text-green-600" />
-                  </div>
-                  <a href={`tel:${config.phone}`} className="text-lg font-bold text-gray-900 dark:text-white hover:text-red-600 transition-colors">
-                    {config.phone}
-                  </a>
-                </div>
-                
+                {/* Facebook - Show once for all branches */}
                 {config.facebook && (
                   <div className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-xl">
                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -206,17 +295,6 @@ export function AboutSection() {
                     </a>
                   </div>
                 )}
-              </div>
-
-              <div className="mt-6 p-6 bg-gradient-to-r from-orange-600 to-red-600 rounded-xl shadow-lg text-white">
-                <h4 className="font-black text-lg mb-3 flex items-center gap-2">
-                  <Clock className="w-5 h-5" />
-                  {t("Aukioloajat", "Opening Hours")}
-                </h4>
-                <div className="flex items-center justify-between text-lg">
-                  <span className="font-medium">{t("Päivittäin", "Daily")}</span>
-                  <span className="font-black text-2xl">{config.hours.general.monday.open} - {config.hours.general.monday.close}</span>
-                </div>
               </div>
             </CardContent>
           </Card>

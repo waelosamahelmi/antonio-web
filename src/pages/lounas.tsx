@@ -34,6 +34,11 @@ export default function Lounas() {
 
   const { data: lounasSettings } = useLounasSettings(selectedBranchId || undefined);
 
+  // Check if lounas is enabled
+  const isLounasEnabled = lounasSettings && !Array.isArray(lounasSettings) 
+    ? lounasSettings.is_enabled 
+    : true;
+
   // Filter branches that have lunch entries for the selected week
   const branches = allBranches?.filter(branch => 
     menus?.some(menu => menu.branch_id === branch.id)
@@ -46,6 +51,33 @@ export default function Lounas() {
 
   // Filter menus for selected branch
   const selectedBranchMenus = menus?.filter(m => m.branch_id === selectedBranchId);
+
+  // If lounas is disabled, show message
+  if (!isLounasEnabled) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50 dark:from-stone-900 dark:via-stone-800 dark:to-stone-900">
+        <UniversalHeader />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Card className="max-w-md mx-4">
+            <CardHeader>
+              <CardTitle className="text-center">
+                {t("Lounas ei ole käytössä", "Lounas is not available", "الغداء غير متاح", "Обед недоступен", "Lunch är inte tillgänglig")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center text-muted-foreground">
+              {t(
+                "Lounas-palvelu ei ole tällä hetkellä käytössä. Tarkista myöhemmin uudelleen.",
+                "Lounas service is currently not available. Please check back later.",
+                "خدمة الغداء غير متاحة حالياً. يرجى التحقق مرة أخرى لاحقاً.",
+                "Обеденный сервис в настоящее время недоступен. Пожалуйста, проверьте позже.",
+                "Lunchtjänsten är för närvarande inte tillgänglig. Vänligen kontrollera senare."
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   const dayNames = {
     fi: ["Sunnuntai", "Maanantai", "Tiistai", "Keskiviikko", "Torstai", "Perjantai", "Lauantai"],
@@ -159,6 +191,16 @@ export default function Lounas() {
                   )
                 )}
               </p>
+              {/* Price Display */}
+              {lounasSettings && !Array.isArray(lounasSettings) && (
+                lounasSettings.price_text || lounasSettings.price_text_en
+              ) && (
+                <div className="mt-4 inline-block px-5 py-3 bg-yellow-400 text-yellow-900 rounded-full font-bold text-lg shadow-lg">
+                  💰 {language === "en" && lounasSettings.price_text_en 
+                    ? lounasSettings.price_text_en 
+                    : lounasSettings.price_text || lounasSettings.price_text_en}
+                </div>
+              )}
             </div>
             <div className="relative animate-slide-up">
               <div className="absolute -inset-4 bg-white/10 blur-3xl rounded-full"></div>
