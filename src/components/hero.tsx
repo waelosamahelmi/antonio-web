@@ -1,10 +1,12 @@
 import { useLanguage } from "@/lib/language-context";
+import { useRestaurant } from "@/lib/restaurant-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, Phone } from "lucide-react";
 
 export function Hero() {
   const { t } = useLanguage();
+  const { config } = useRestaurant();
 
   const scrollToMenu = () => {
     document.getElementById("menu")?.scrollIntoView({ behavior: "smooth" });

@@ -462,7 +462,7 @@ printer connectivity.
     const city = config?.address?.city || 'Lahti';
     const phone = config?.phone || '+358-3781-2222';
     const email = config?.email || 'info@ravintolababylon.fi';
-    const website = config?.social_media?.website || 'www.ravintolababylon.fi';
+    const website = config?.website || 'www.ravintolababylon.fi';
     
     const date = new Date(order.createdAt || new Date());
     const escInit = '\x1B\x40'; // Initialize printer

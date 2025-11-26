@@ -12,7 +12,7 @@ export function FontLoader() {
     const fonts = config.theme?.fonts;
     if (!fonts) return;
     
-    const { heading, body, display } = fonts;
+    const { heading, body, display } = fonts as { heading?: string; body?: string; display?: string };
     const fontsToLoad = new Set<string>();
     
     // Collect unique fonts

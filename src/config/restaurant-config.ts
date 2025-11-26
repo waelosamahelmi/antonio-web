@@ -89,9 +89,15 @@ export interface RestaurantConfig {
   instagram?: string;
   tiktok?: string;
   website?: string;
+  socialMedia?: {
+    facebook?: string;
+    instagram?: string;
+    tiktok?: string;
+  };
   
   // Status
   isBusy?: boolean;
+  isOpen?: boolean; // Force open/closed override
   
   // Business Hours (will be overridden by database)
   hours: {
