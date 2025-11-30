@@ -144,6 +144,9 @@ export const restaurantSettings = pgTable("restaurant_settings", {
   deliveryHours: text("delivery_hours").notNull(),
   lunchBuffetHours: text("lunch_buffet_hours").notNull(),
   specialMessage: text("special_message"),
+  // Online payment service fee
+  onlinePaymentServiceFee: numeric("online_payment_service_fee", { precision: 10, scale: 2 }).default('0.00'),
+  onlinePaymentServiceFeeType: text("online_payment_service_fee_type").default('fixed'), // 'fixed' or 'percentage'
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 

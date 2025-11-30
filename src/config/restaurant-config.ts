@@ -34,6 +34,8 @@ export interface DatabaseRestaurantSettings {
   stripe_account_email?: string;
   stripe_account_country?: string;
   stripe_payment_methods_config?: string | object;
+  online_payment_service_fee?: number | string;
+  online_payment_service_fee_type?: 'fixed' | 'percentage';
 }
 
 // Parsed hours format from database

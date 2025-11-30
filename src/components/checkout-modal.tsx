@@ -214,7 +214,24 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
     ? (MINIMUM_ORDER - totalPrice) 
     : 0;
   
-  const totalAmount = totalPrice + deliveryFee + smallOrderFee;
+  // Calculate online payment service fee
+  const calculateServiceFee = () => {
+    if (!isStripePaymentMethod(formData.paymentMethod)) return 0;
+    
+    const feeAmount = parseFloat(dbSettings?.online_payment_service_fee?.toString() || "0");
+    const feeType = dbSettings?.online_payment_service_fee_type || "fixed";
+    
+    if (feeType === "percentage") {
+      // Calculate percentage of order subtotal + delivery + small order fee
+      return ((totalPrice + deliveryFee + smallOrderFee) * feeAmount) / 100;
+    } else {
+      // Fixed amount
+      return feeAmount;
+    }
+  };
+  
+  const serviceFee = calculateServiceFee();
+  const totalAmount = totalPrice + deliveryFee + smallOrderFee + serviceFee;
   const minimumOrderAmount = formData.orderType === "delivery" && 
     deliveryInfo && deliveryInfo.distance > 10 ? 20.00 : 0;
 
@@ -695,6 +712,12 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
                   <div className="flex justify-between text-sm text-amber-600 dark:text-amber-400">
                     <span>{t("Pientilauslisä", "Small order fee")}</span>
                     <span>€{smallOrderFee.toFixed(2)}</span>
+                  </div>
+                )}
+                {serviceFee > 0 && (
+                  <div className="flex justify-between text-sm text-blue-600 dark:text-blue-400">
+                    <span>{t("Verkkomaksu palvelumaksu", "Online payment service fee")}</span>
+                    <span>€{serviceFee.toFixed(2)}</span>
                   </div>
                 )}
               </div>
