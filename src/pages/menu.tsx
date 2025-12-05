@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useCategories, useMenuItems } from "@/hooks/use-menu";
 import { useLanguage } from "@/lib/language-context";
 import { useCart } from "@/lib/cart-context";
@@ -34,7 +34,20 @@ import {
   Sandwich,
   AlertTriangle,
   Store,
-  MapPin
+  MapPin,
+  Flame,
+  Plus,
+  Star,
+  Sparkles,
+  Filter,
+  X,
+  ArrowRight,
+  ShoppingBag,
+  Clock,
+  TrendingUp,
+  Grid3X3,
+  LayoutList,
+  ChevronRight
 } from "lucide-react";
 import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
@@ -59,120 +72,79 @@ export default function Menu() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [showClosedModal, setShowClosedModal] = useState(false);
-  const [isOrderingAvailable, setIsOrderingAvailable] = useState(true); // Start optimistic
+  const [isOrderingAvailable, setIsOrderingAvailable] = useState(true);
+  const [viewMode, setViewMode] = useState<'grid' | 'comfortable'>('grid');
+  
+  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
-  // Check ordering availability based on branch hours
   useEffect(() => {
     const checkOrderingStatus = () => {
-      // Check if restaurant is forced open (override all hours)
       if (config && config.isOpen) {
-        console.log('✅ Menu: Restaurant is FORCE OPEN - enabling orders regardless of hours');
         setIsOrderingAvailable(true);
         setShowClosedModal(false);
         return;
       }
 
-      // Check if restaurant is busy
       if (config && config.isBusy) {
-        console.log('⚠️ Menu: Restaurant is BUSY - disabling orders');
         setIsOrderingAvailable(false);
-        if (!showClosedModal) {
-          setShowClosedModal(true);
-        }
+        if (!showClosedModal) setShowClosedModal(true);
         return;
       }
 
-      // Check if any branch is open
       if (branches && branches.length > 0) {
         const anyBranchOpen = isAnyBranchOpen(branches);
-
-        console.log('🔍 Menu: Checking branch ordering status', {
-          totalBranches: branches.length,
-          anyBranchOpen,
-          isBusy: config?.isBusy,
-          isForceOpen: config?.isOpen
-        });
-
         setIsOrderingAvailable(anyBranchOpen);
-
-        // Show closed modal only if no branches are open
-        if (!anyBranchOpen && !showClosedModal) {
-          console.log('⚠️ Menu: All branches are CLOSED - showing modal');
-          setShowClosedModal(true);
-        }
+        if (!anyBranchOpen && !showClosedModal) setShowClosedModal(true);
       } else {
-        // Fallback to true if no branches configured yet
         setIsOrderingAvailable(true);
       }
     };
 
     checkOrderingStatus();
-
-    // Check every minute
     const interval = setInterval(checkOrderingStatus, 60000);
-
     return () => clearInterval(interval);
   }, [showClosedModal, config, branches]);
 
   const handleCartOpen = () => {
-    if (!isOrderingAvailable) {
-      setShowClosedModal(true);
-      return;
-    }
+    if (!isOrderingAvailable) { setShowClosedModal(true); return; }
     setIsCartOpen(true);
   };
   
   const handleCartClose = () => setIsCartOpen(false);
+  
   const handleCheckoutOpen = () => {
-    if (!isOrderingAvailable) {
-      setShowClosedModal(true);
-      return;
-    }
+    if (!isOrderingAvailable) { setShowClosedModal(true); return; }
     setIsCheckoutOpen(true);
   };
   
   const handleCheckoutClose = () => setIsCheckoutOpen(false);
-  const handleBackToCart = () => {
-    setIsCheckoutOpen(false);
-    setIsCartOpen(true);
-  };
+  const handleBackToCart = () => { setIsCheckoutOpen(false); setIsCartOpen(true); };
 
-  // Apply promotions to menu items
   const itemsWithPromotions = useMemo(() => {
     if (!menuItems || !promotions) return menuItems || [];
 
     return menuItems.map((item: any) => {
-      // Find best applicable promotion for this item
       const applicablePromotions = promotions.filter((promo: any) => {
-        // Check if promotion applies to this category or all categories
         const categoryMatch = !promo.category_id || promo.category_id === item.categoryId;
-        // Check if promotion applies to selected branch or all branches
         const branchMatch = !promo.branch_id || !selectedBranch || promo.branch_id === selectedBranch;
         return categoryMatch && branchMatch;
       });
 
-      if (applicablePromotions.length === 0) {
-        return item;
-      }
+      if (applicablePromotions.length === 0) return item;
 
-      // Use the best promotion (highest discount)
       const bestPromotion = applicablePromotions[0];
       const itemPrice = parseFloat(item.offerPrice || item.price);
       const discount = calculatePromotionDiscount(itemPrice, bestPromotion);
       
       if (discount > 0) {
-        const promotionalPrice = itemPrice - discount;
-        const discountPercentage = Math.round((discount / itemPrice) * 100);
-        
         return {
           ...item,
-          promotionalPrice: promotionalPrice.toFixed(2),
+          promotionalPrice: (itemPrice - discount).toFixed(2),
           promotionDiscount: discount.toFixed(2),
-          promotionPercentage: discountPercentage,
+          promotionPercentage: Math.round((discount / itemPrice) * 100),
           activePromotion: bestPromotion,
         };
       }
-
       return item;
     });
   }, [menuItems, promotions, selectedBranch]);
@@ -181,63 +153,55 @@ export default function Menu() {
     const matchesCategory = selectedCategory === "all" || item.categoryId?.toString() === selectedCategory;
     const matchesSearch = searchTerm === "" ||
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.nameEn.toLowerCase().includes(searchTerm.toLowerCase());
+      item.nameEn?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Branch filtering logic:
     const itemBranchId = (item as any).branch_id;
     
-    // If "Kaikki" (All) is selected:
     if (selectedBranch === null) {
-      // Show items with no branch_id (available everywhere)
       if (itemBranchId === null || itemBranchId === undefined) {
         return matchesCategory && matchesSearch && item.isAvailable;
       }
-      
-      // For items with branch_id, only show if that branch is open
       const itemBranch = branches?.find(b => b.id === itemBranchId);
       const isBranchOpen = itemBranch ? isBranchOrderingAvailable(itemBranch) : false;
-      
       return matchesCategory && matchesSearch && item.isAvailable && isBranchOpen;
     }
     
-    // If a specific branch is selected:
-    // Show items assigned to that branch OR items with null/undefined branch_id (available everywhere)
-    const matchesBranch = itemBranchId === null || 
-                          itemBranchId === undefined || 
-                          itemBranchId === selectedBranch;
-
+    const matchesBranch = itemBranchId === null || itemBranchId === undefined || itemBranchId === selectedBranch;
     return matchesCategory && matchesSearch && matchesBranch && item.isAvailable;
   }) || [];
 
-  const handleItemClick = (item: any) => {
-    if (!isOrderingAvailable) {
-      setShowClosedModal(true);
-      return;
+  // Group items by category for section view
+  const itemsByCategory = useMemo(() => {
+    if (!categories || !filteredItems) return {};
+    const grouped: { [key: string]: any[] } = {};
+    
+    if (selectedCategory === "all") {
+      categories.forEach(cat => {
+        const items = filteredItems.filter(item => item.categoryId === cat.id);
+        if (items.length > 0) {
+          grouped[cat.id] = items;
+        }
+      });
+    } else {
+      grouped[selectedCategory] = filteredItems;
     }
+    return grouped;
+  }, [categories, filteredItems, selectedCategory]);
+
+  const handleItemClick = (item: any) => {
+    if (!isOrderingAvailable) { setShowClosedModal(true); return; }
     setSelectedItem(item);
     setShowItemModal(true);
   };
 
   const handleAddToCart = (item: any, quantity: number, size?: string, toppings?: string[], specialInstructions?: string, toppingsPrice?: number, sizePrice?: number) => {
-    if (!isOrderingAvailable) {
-      setShowClosedModal(true);
-      return;
-    }
+    if (!isOrderingAvailable) { setShowClosedModal(true); return; }
     addItem(item, quantity, size, toppings, specialInstructions, toppingsPrice, sizePrice);
     setShowItemModal(false);
   };
 
-  const formatPrice = (price: string) => {
-    return `${parseFloat(price).toFixed(2)} €`;
-  };
+  const formatPrice = (price: string) => `${parseFloat(price).toFixed(2)} €`;
 
-  const isPizza = (categoryId: number | null) => {
-    if (!categoryId) return false;
-    const category = categories?.find(cat => cat.id === categoryId);
-    return category?.name.toLowerCase().includes('pizza') || false;
-  };
-
-  // Category icon mapping
   const getCategoryIcon = (categoryName: string) => {
     const name = categoryName.toLowerCase();
     if (name.includes('pizza')) return Pizza;
@@ -252,21 +216,48 @@ export default function Menu() {
     return UtensilsCrossed;
   };
 
+  const getCategoryName = (categoryId: number | string | null) => {
+    if (!categoryId) return '';
+    const category = categories?.find(cat => cat.id === Number(categoryId));
+    return category?.name?.replace(/🍕😍|🥗|🍗|🍔|🥤/g, '').trim() || '';
+  };
+
+  const scrollToCategory = (categoryId: string) => {
+    setSelectedCategory("all");
+    setTimeout(() => {
+      categoryRefs.current[categoryId]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
+  // Popular items (items with offers or high in list)
+  const popularItems = useMemo(() => {
+    return itemsWithPromotions
+      ?.filter(item => item.isAvailable && (item.promotionalPrice || item.offerPrice))
+      .slice(0, 4) || [];
+  }, [itemsWithPromotions]);
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-stone-900">
-        <MobileNav />
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <Card key={i} className="overflow-hidden">
-                <Skeleton className="h-48 w-full" />
-                <CardContent className="p-4">
-                  <Skeleton className="h-4 w-3/4 mb-2" />
-                  <Skeleton className="h-3 w-full mb-2" />
-                  <Skeleton className="h-6 w-20" />
-                </CardContent>
-              </Card>
+      <div className="min-h-screen bg-background">
+        <UniversalHeader onCartClick={handleCartOpen} />
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <Skeleton className="h-12 w-64 mb-8" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-32 rounded-2xl" />
+            ))}
+          </div>
+          <Skeleton className="h-10 w-full mb-6 rounded-xl" />
+          <div className="space-y-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i}>
+                <Skeleton className="h-8 w-48 mb-4" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Array.from({ length: 4 }).map((_, j) => (
+                    <Skeleton key={j} className="h-28 rounded-xl" />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -275,337 +266,334 @@ export default function Menu() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-red-50 dark:from-stone-900 dark:via-stone-800 dark:to-stone-900">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30">
       <UniversalHeader onCartClick={handleCartOpen} />
       
-      {/* Modern Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-red-600 via-orange-600 to-red-600 text-white">
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\' fill=\'%23ffffff\' fill-opacity=\'1\' fill-rule=\'evenodd\'/%3E%3C/svg%3E")' }}></div>
-        <div className="max-w-7xl mx-auto px-4 py-16 md:py-20 relative z-10">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="animate-fade-in">
-              <div className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-bold mb-4">
-                {t("Tuoretta ja maukasta", "Fresh & Delicious")}
-              </div>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight drop-shadow-lg">
-                {t("Ruokalista", "Our Menu")}
-              </h1>
-              <p className="text-xl md:text-2xl text-white/90 font-medium">
-                {t("Löydä suosikkisi yli", "Find your favorite from over")} {filteredItems.length}+ {t("tuotteen valikoimasta", "products")}
-              </p>
-            </div>
-            <div className="relative animate-slide-up">
-              <div className="absolute -inset-4 bg-white/10 blur-3xl rounded-full"></div>
-              <div className="relative bg-white dark:bg-stone-800 rounded-2xl shadow-2xl p-2">
-                <div className="relative">
-                  <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder={t("Etsi ruokia...", "Search menu items...")}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-16 pr-6 py-7 text-lg border-0 bg-transparent focus:ring-2 focus:ring-red-500 rounded-xl"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Restaurant Status */}
       <MultiBranchStatusHeaderV2 />
 
-      {/* Branch Selection */}
-      {branches && branches.length > 1 && (() => {
-        // Filter to only show open branches
-        const openBranches = branches.filter(branch => isBranchOrderingAvailable(branch));
+      <div className="max-w-6xl mx-auto px-4 py-6 md:py-10">
         
-        return (
-          <div className="bg-white dark:bg-stone-800 border-b border-gray-200 dark:border-stone-700">
-            <div className="max-w-7xl mx-auto px-4 py-4">
-              <div className="flex items-center gap-3 flex-wrap">
-                <Store className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                <span className="font-semibold text-gray-700 dark:text-gray-300">
-                  {t("Valitse toimipiste:", "Select branch:")}
-                </span>
-                <div className="flex gap-2 flex-wrap">
-                  <Button
-                    variant={selectedBranch === null ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedBranch(null)}
-                    className={selectedBranch === null ? "bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700" : ""}
-                  >
-                    {t("Kaikki", "All")}
-                  </Button>
-                  {openBranches.map((branch) => (
-                    <Button
-                      key={branch.id}
-                      variant={selectedBranch === branch.id ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedBranch(branch.id)}
-                      className={selectedBranch === branch.id ? "bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700" : ""}
-                    >
-                      <MapPin className="w-3.5 h-3.5 mr-1.5" />
-                      {language === 'en' ? branch.name_en : branch.name}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-black text-foreground mb-2">
+            {t("Ruokalista", "Menu")}
+          </h1>
+          <p className="text-muted-foreground">
+            {t("Valitse herkullinen annoksesi", "Choose your delicious meal")}
+          </p>
+        </div>
 
-      {/* Main Content - Sidebar Layout */}
-      <div className="max-w-7xl mx-auto px-4 py-10">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Mobile Horizontal Categories */}
-          <div className="lg:hidden">
-            <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-xl p-4 mb-6">
-              <h2 className="text-lg font-black mb-3 text-gray-900 dark:text-white flex items-center gap-2">
-                <div className="w-1 h-6 bg-gradient-to-b from-red-600 to-orange-600 rounded-full"></div>
-                {t("Kategoriat", "Categories")}
-              </h2>
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-red-500 scrollbar-track-gray-100 dark:scrollbar-track-stone-700">
-                <button
-                  onClick={() => setSelectedCategory("all")}
-                  className={`flex-shrink-0 px-4 py-2 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${
-                    selectedCategory === "all"
-                      ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-lg'
-                      : 'bg-gray-50 dark:bg-stone-700 text-gray-700 dark:text-gray-300'
-                  }`}
-                >
-                  <UtensilsCrossed className="w-4 h-4" />
-                  {t("Kaikki", "All")}
-                  <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
-                    selectedCategory === "all" 
-                      ? 'bg-white/20' 
-                      : 'bg-gray-200 dark:bg-stone-600'
-                  }`}>
-                    {menuItems?.length || 0}
-                  </span>
-                </button>
+        {/* Quick Category Navigation */}
+        {categories && categories.length > 0 && (
+          <div className="mb-8">
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin -mx-4 px-4">
+              {categories.map((cat) => {
+                const IconComponent = getCategoryIcon(cat.name);
+                const count = menuItems?.filter(item => item.categoryId === cat.id && item.isAvailable).length || 0;
+                if (count === 0) return null;
                 
-                {categories?.map((cat) => {
-                  const IconComponent = getCategoryIcon(cat.name);
-                  const categoryItems = menuItems?.filter(item => item.categoryId === cat.id) || [];
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id.toString())}
-                      className={`flex-shrink-0 px-4 py-2 rounded-xl font-bold transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${
-                        selectedCategory === cat.id.toString()
-                          ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-lg'
-                          : 'bg-gray-50 dark:bg-stone-700 text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      <IconComponent className="w-4 h-4" />
-                      {cat.name.replace(/🍕😍|🥗|🍗|🍔|🥤/, '').trim()}
-                      <span className={`text-xs font-black px-2 py-0.5 rounded-full ${
-                        selectedCategory === cat.id.toString() 
-                          ? 'bg-white/20' 
-                          : 'bg-gray-200 dark:bg-stone-600'
-                      }`}>
-                        {categoryItems.length}
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => scrollToCategory(cat.id.toString())}
+                    className="flex-shrink-0 group"
+                  >
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1.5 group-hover:scale-105">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-colors">
+                        <IconComponent className="w-5 h-5" />
+                      </div>
+                      <span className="text-xs font-semibold text-foreground text-center line-clamp-1 px-1">
+                        {cat.name.replace(/🍕😍|🥗|🍗|🍔|🥤/g, '').trim().split(' ')[0]}
                       </span>
-                    </button>
-                  );
-                })}
-              </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
+        )}
 
-          {/* Desktop Sidebar Categories */}
-          <aside className="hidden lg:block lg:w-72 flex-shrink-0">
-            <div className="lg:sticky lg:top-4 space-y-6">
-              <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-xl p-6 animate-slide-up">
-                <h2 className="text-2xl font-black mb-6 text-gray-900 dark:text-white flex items-center gap-3">
-                  <div className="w-1 h-8 bg-gradient-to-b from-red-600 to-orange-600 rounded-full"></div>
-                  {t("Kategoriat", "Categories")}
-                </h2>
-                <div className="space-y-2 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-red-500 scrollbar-track-gray-100 dark:scrollbar-track-stone-700">
-                  <button
-                    onClick={() => setSelectedCategory("all")}
-                    className={`w-full text-left px-6 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-between group ${
-                      selectedCategory === "all"
-                        ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-lg transform scale-105'
-                        : 'bg-gray-50 dark:bg-stone-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-stone-600'
-                    }`}
-                  >
-                    <span className="flex items-center gap-3">
-                      <UtensilsCrossed className="w-5 h-5" />
-                      {t("Kaikki tuotteet", "All Items")}
-                    </span>
-                    <span className={`text-sm font-black px-3 py-1 rounded-full ${
-                      selectedCategory === "all" 
-                        ? 'bg-white/20' 
-                        : 'bg-gray-200 dark:bg-stone-600'
-                    }`}>
-                      {menuItems?.length || 0}
-                    </span>
-                  </button>
-                  
-                  {categories?.map((cat) => {
-                    const IconComponent = getCategoryIcon(cat.name);
-                    const categoryItems = menuItems?.filter(item => item.categoryId === cat.id) || [];
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => setSelectedCategory(cat.id.toString())}
-                        className={`w-full text-left px-6 py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-between group ${
-                          selectedCategory === cat.id.toString()
-                            ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white shadow-lg transform scale-105'
-                            : 'bg-gray-50 dark:bg-stone-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-stone-600'
-                        }`}
-                      >
-                        <span className="flex items-center gap-3">
-                          <IconComponent className="w-5 h-5" />
-                          {cat.name.replace(/🍕😍|🥗|🍗|🍔|🥤/, '').trim()}
-                        </span>
-                        <span className={`text-sm font-black px-3 py-1 rounded-full ${
-                          selectedCategory === cat.id.toString() 
-                            ? 'bg-white/20' 
-                            : 'bg-gray-200 dark:bg-stone-600'
-                        }`}>
-                          {categoryItems.length}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-              
-              {/* Stats Card */}
-              <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-xl p-6 text-white animate-scale-in">
-                <div className="text-5xl font-black mb-2">{filteredItems.length}</div>
-                <div className="text-white/90 font-bold">{t("tuotetta löytyi", "items found")}</div>
-              </div>
-            </div>
-          </aside>
-
-          {/* Menu Items Grid */}
-          <div className="flex-1">
-            {filteredItems.length === 0 ? (
-              <div className="text-center py-20 animate-fade-in bg-white dark:bg-stone-800 rounded-2xl shadow-xl">
-                <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-stone-700 dark:to-stone-600 flex items-center justify-center">
-                  <Search className="w-12 h-12 text-gray-400" />
-                </div>
-                <p className="text-2xl font-bold text-gray-600 dark:text-gray-400 mb-2">
-                  {t("Ei tuloksia", "No results found")}
-                </p>
-                <p className="text-gray-500 dark:text-gray-500">
-                  {t("Kokeile toista hakusanaa", "Try a different search term")}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredItems.map((item) => (
-                  <Card 
-                    key={item.id}
-                    className={`group overflow-hidden border-0 bg-white dark:bg-stone-800 hover:shadow-2xl transition-all duration-500 animate-scale-in relative ${
-                      isOrderingAvailable 
-                        ? 'cursor-pointer' 
-                        : 'opacity-60 cursor-not-allowed'
-                    }`}
-                    onClick={() => handleItemClick(item)}
-                  >
-                    <div className="absolute top-4 left-4 z-10 flex gap-2">
-                      {item.isVegetarian && (
-                        <div className="bg-green-500 text-white rounded-full p-2 shadow-lg">
-                          <Leaf className="w-4 h-4" />
-                        </div>
-                      )}
-                      {item.isVegan && (
-                        <div className="bg-green-600 text-white rounded-full p-2 shadow-lg">
-                          <Heart className="w-4 h-4" />
-                        </div>
-                      )}
-                      {item.isGlutenFree && (
-                        <div className="bg-amber-500 text-white rounded-full p-2 shadow-lg">
-                          <Wheat className="w-4 h-4" />
-                        </div>
-                      )}
-                    </div>
-
-                    {(item.offerPercentage || item.promotionPercentage) && (
-                      <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-red-500 to-orange-600 text-white px-4 py-2 rounded-full font-black text-sm shadow-xl animate-pulse">
-                        🔥 -{item.promotionPercentage || item.offerPercentage}% OFF
-                      </div>
-                    )}
-                    
-                    <div className="aspect-[16/11] relative overflow-hidden bg-gray-100 dark:bg-stone-700">
-                      <img
-                        src={item.imageUrl || "/placeholder-food.jpg"}
-                        alt={item.name}
-                        className={`w-full h-full object-cover transition-transform duration-700 ${
-                          !isOrderingAvailable ? 'grayscale' : 'group-hover:scale-110 group-hover:rotate-1'
-                        }`}
-                        loading="lazy"
-                      />
-                      <div className={`absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent ${
-                        isOrderingAvailable ? 'opacity-0 group-hover:opacity-100' : 'opacity-100'
-                      } transition-opacity duration-500`}></div>
-                      
-                      {!isOrderingAvailable && (
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                          <div className="text-white text-center">
-                            <AlertTriangle className="w-10 h-10 mx-auto mb-3" />
-                            <span className="text-base font-bold">
-                              {t("Tilaukset suljettu", "Orders closed")}
-                            </span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <CardContent className="p-6">
-                      <div className="mb-4">
-                        <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 group-hover:text-red-600 transition-colors line-clamp-1">
-                          {item.name}
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                          {item.description}
-                        </p>
-                      </div>
-                      
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-stone-700">
-                        <div>
-                          {parseFloat(item.price) === 0 ? (
-                            <div className="text-sm text-gray-500 dark:text-gray-400 italic">
-                              {t("Hinta pyynnöstä", "Price on request")}
-                            </div>
-                          ) : (item.promotionalPrice || item.offerPrice) ? (
-                            <div>
-                              <div className="text-3xl font-black text-red-600 mb-1">
-                                {formatPrice(item.promotionalPrice || item.offerPrice)}
-                              </div>
-                              <div className="text-sm text-gray-400 line-through">
-                                {formatPrice(item.price)}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="text-3xl font-black bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                              {formatPrice(item.price)}
-                            </div>
-                          )}
-                        </div>
-                        {isOrderingAvailable && (
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-red-600 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:shadow-xl transition-all">
-                            <ChefHat className="w-6 h-6 text-white" />
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+        {/* Search Bar */}
+        <div className="mb-8">
+          <div className="relative max-w-xl">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder={t("Etsi ruokalistalta...", "Search the menu...")}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-12 py-6 text-base bg-card border-border rounded-2xl shadow-sm focus:shadow-md transition-shadow"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 hover:bg-muted rounded-full transition-colors"
+              >
+                <X className="w-4 h-4 text-muted-foreground" />
+              </button>
             )}
           </div>
         </div>
+
+        {/* Branch Selection */}
+        {branches && branches.length > 1 && (
+          <div className="mb-8 p-4 bg-card rounded-2xl border border-border">
+            <div className="flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Store className="w-4 h-4" />
+                <span className="text-sm font-medium">{t("Toimipiste", "Branch")}</span>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => setSelectedBranch(null)}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-sm font-medium transition-all",
+                    selectedBranch === null
+                      ? "bg-primary text-white shadow-md"
+                      : "bg-muted hover:bg-muted/80 text-foreground"
+                  )}
+                >
+                  {t("Kaikki", "All")}
+                </button>
+                {branches.filter(b => isBranchOrderingAvailable(b)).map((branch) => (
+                  <button
+                    key={branch.id}
+                    onClick={() => setSelectedBranch(branch.id)}
+                    className={cn(
+                      "px-4 py-2 rounded-xl text-sm font-medium transition-all flex items-center gap-2",
+                      selectedBranch === branch.id
+                        ? "bg-primary text-white shadow-md"
+                        : "bg-muted hover:bg-muted/80 text-foreground"
+                    )}
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    {language === 'en' ? branch.name_en : branch.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Deals Section */}
+        {popularItems.length > 0 && !searchTerm && selectedCategory === "all" && (
+          <div className="mb-10">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                <Flame className="w-4 h-4 text-orange-500" />
+              </div>
+              <h2 className="text-xl font-bold text-foreground">{t("Tarjoukset", "Deals")}</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {popularItems.map((item) => (
+                <div
+                  key={`deal-${item.id}`}
+                  onClick={() => handleItemClick(item)}
+                  className="group cursor-pointer bg-gradient-to-br from-orange-500/5 to-red-500/5 border border-orange-200 dark:border-orange-900/30 rounded-2xl p-4 hover:shadow-lg hover:border-orange-300 transition-all"
+                >
+                  <div className="flex gap-3">
+                    <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-muted">
+                      <img 
+                        src={item.imageUrl || "/placeholder-food.jpg"} 
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Flame className="w-3 h-3 text-orange-500" />
+                        <span className="text-xs font-bold text-orange-600">
+                          -{item.promotionPercentage || item.offerPercentage}%
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-foreground text-sm line-clamp-1 mb-1">{item.name}</h3>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-lg font-black text-primary">
+                          {formatPrice(item.promotionalPrice || item.offerPrice)}
+                        </span>
+                        <span className="text-xs text-muted-foreground line-through">
+                          {formatPrice(item.price)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Search Results */}
+        {searchTerm && (
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <p className="text-muted-foreground">
+                {filteredItems.length} {t("tulosta haulle", "results for")} "{searchTerm}"
+              </p>
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="text-sm text-primary hover:underline"
+              >
+                {t("Tyhjennä", "Clear")}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Menu Sections by Category */}
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-muted flex items-center justify-center">
+              <Search className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-lg font-bold text-foreground mb-2">
+              {t("Ei tuloksia", "No results")}
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              {t("Kokeile toista hakusanaa", "Try a different search")}
+            </p>
+            <Button variant="outline" onClick={() => { setSearchTerm(''); setSelectedCategory('all'); }}>
+              {t("Näytä kaikki", "Show all")}
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-10">
+            {Object.entries(itemsByCategory).map(([categoryId, items]) => {
+              const category = categories?.find(c => c.id === Number(categoryId));
+              if (!category || items.length === 0) return null;
+              
+              const IconComponent = getCategoryIcon(category.name);
+              const categoryName = category.name.replace(/🍕😍|🥗|🍗|🍔|🥤/g, '').trim();
+              
+              return (
+                <div 
+                  key={categoryId} 
+                  ref={el => categoryRefs.current[categoryId] = el}
+                  className="scroll-mt-4"
+                >
+                  {/* Category Header */}
+                  <div className="flex items-center gap-3 mb-5 sticky top-0 bg-background/95 backdrop-blur-sm py-3 -mx-4 px-4 z-10">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                      <IconComponent className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-foreground">{categoryName}</h2>
+                      <p className="text-sm text-muted-foreground">{items.length} {t("tuotetta", "items")}</p>
+                    </div>
+                  </div>
+
+                  {/* Items List */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {items.map((item: any) => (
+                      <div
+                        key={item.id}
+                        onClick={() => handleItemClick(item)}
+                        className={cn(
+                          "group bg-card rounded-2xl border border-border overflow-hidden transition-all",
+                          isOrderingAvailable 
+                            ? "cursor-pointer hover:shadow-xl hover:border-primary/20 hover:scale-[1.02]" 
+                            : "opacity-60 cursor-not-allowed"
+                        )}
+                      >
+                        <div className="flex">
+                          {/* Image */}
+                          <div className="w-32 md:w-40 flex-shrink-0 relative overflow-hidden">
+                            <img
+                              src={item.imageUrl || "/placeholder-food.jpg"}
+                              alt={item.name}
+                              className="w-full h-full object-cover aspect-square group-hover:scale-110 transition-transform duration-500"
+                              loading="lazy"
+                            />
+                            
+                            {/* Badges */}
+                            {(item.promotionPercentage || item.offerPercentage) && (
+                              <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg">
+                                -{item.promotionPercentage || item.offerPercentage}%
+                              </div>
+                            )}
+                            
+                            {!isOrderingAvailable && (
+                              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                <AlertTriangle className="w-6 h-6 text-white" />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Content */}
+                          <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                            <div>
+                              {/* Title & Dietary */}
+                              <div className="flex items-start justify-between gap-2 mb-1">
+                                <h3 className="font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                                  {item.name}
+                                </h3>
+                                <div className="flex gap-1 flex-shrink-0">
+                                  {item.isVegetarian && (
+                                    <span className="w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center" title="Vegetarian">
+                                      <Leaf className="w-3 h-3 text-green-600" />
+                                    </span>
+                                  )}
+                                  {item.isVegan && (
+                                    <span className="w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center" title="Vegan">
+                                      <Heart className="w-3 h-3 text-green-600" />
+                                    </span>
+                                  )}
+                                  {item.isGlutenFree && (
+                                    <span className="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center" title="Gluten-free">
+                                      <Wheat className="w-3 h-3 text-amber-600" />
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Description */}
+                              <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                                {item.description || t("Herkullinen annos ravintolastamme", "Delicious dish from our restaurant")}
+                              </p>
+                            </div>
+
+                            {/* Price & Action */}
+                            <div className="flex items-center justify-between">
+                              {parseFloat(item.price) === 0 ? (
+                                <span className="text-sm text-muted-foreground italic">
+                                  {t("Kysy hinta", "Ask price")}
+                                </span>
+                              ) : (
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-xl font-black text-primary">
+                                    {formatPrice(item.promotionalPrice || item.offerPrice || item.price)}
+                                  </span>
+                                  {(item.promotionalPrice || item.offerPrice) && (
+                                    <span className="text-sm text-muted-foreground line-through">
+                                      {formatPrice(item.price)}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {isOrderingAvailable && (
+                                <button 
+                                  className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-lg"
+                                  onClick={(e) => { e.stopPropagation(); handleItemClick(item); }}
+                                >
+                                  <Plus className="w-5 h-5" />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* Item Detail Modal */}
+      {/* Modals */}
       <ItemDetailModal
         item={selectedItem}
         isOpen={showItemModal}
@@ -613,7 +601,6 @@ export default function Menu() {
         onAddToCart={handleAddToCart}
       />
 
-      {/* Cart and Checkout Modals */}
       <CartModal
         isOpen={isCartOpen}
         onClose={handleCartClose}
@@ -626,7 +613,6 @@ export default function Menu() {
         onBack={handleBackToCart}
       />
 
-      {/* Closed Restaurant Modal */}
       <RestaurantClosedModal
         isOpen={showClosedModal}
         onClose={() => setShowClosedModal(false)}

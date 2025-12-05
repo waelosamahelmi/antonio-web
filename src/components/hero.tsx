@@ -1,4 +1,4 @@
-import { useLanguage } from "@/lib/language-context";
+﻿import { useLanguage } from "@/lib/language-context";
 import { useRestaurant } from "@/lib/restaurant-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,8 +74,8 @@ export function Hero() {
             <div className="flex items-center justify-center space-x-2">
               <MapPin className="w-5 h-5" />
               <div className="text-center">
-                <span className="text-sm font-medium block">Vapaudenkatu 28</span>
-                <p className="text-xs text-gray-300">15140 Lahti</p>
+                <span className="text-sm font-medium block">Rauhankatu 19 c</span>
+                <p className="text-xs text-gray-300">15110 Lahti</p>
               </div>
             </div>
           </div>
@@ -84,7 +84,7 @@ export function Hero() {
             <div className="flex items-center justify-center space-x-2">
               <Phone className="w-5 h-5" />
               <div className="text-center">
-                <span className="text-sm font-medium block">+358-3781-2222</span>
+                <span className="text-sm font-medium block">+358-3589-9089</span>
                 <p className="text-xs text-gray-300">{t("Puhelin", "Phone")}</p>
               </div>
             </div>

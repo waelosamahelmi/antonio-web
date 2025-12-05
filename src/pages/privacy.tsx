@@ -11,7 +11,7 @@ export default function Privacy() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-stone-900 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
           <Button
@@ -24,12 +24,12 @@ export default function Privacy() {
           </Button>
           
           <div className="flex items-center space-x-3 mb-4">
-            <Shield className="w-8 h-8 text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <Shield className="w-8 h-8 text-primary" />
+            <h1 className="text-3xl font-bold text-foreground">
               {t("Tietosuojaseloste", "Privacy Policy")}
             </h1>
           </div>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-muted-foreground">
             {t("GDPR-yhteensopiva | Viimeksi päivitetty: 12.6.2024", "GDPR Compliant | Last updated: June 12, 2024")}
           </p>
         </div>
@@ -176,7 +176,7 @@ export default function Privacy() {
                   "For privacy-related questions, contact:"
                 )}
               </p>
-              <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mt-4">
+              <div className="bg-muted p-4 rounded-lg mt-4">
                 <p>
                   <strong>Tietosuojavastaava / Data Protection Officer</strong><br />
                   Pizzeria Antonio<br />

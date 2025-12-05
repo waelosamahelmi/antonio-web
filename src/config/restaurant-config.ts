@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Restaurant Configuration
  * Centralized configuration for easy restaurant customization
  */
@@ -359,8 +359,8 @@ export const pizzeria_antonio_CONFIG: RestaurantConfig = {
   phone: "+358401234567",
   email: "info@pizzeriaantonio.fi",
   address: {
-    street: "Vapaudenkatu 28",
-    postalCode: "15140",
+    street: "Rauhankatu 19 c",
+    postalCode: "15110",
     city: "Lahti",
     country: "Finland"
   },

@@ -180,7 +180,7 @@ export function EmailMarketing() {
       html = html.replace('{{CONTENT}}', emailContent.replace(/\n/g, '<br>'));
       html = html.replace('{{LINK}}', emailLink || '#');
       html = html.replace(/{{RESTAURANT_NAME}}/g, 'Restaurant Antonio');
-      html = html.replace(/{{RESTAURANT_ADDRESS}}/g, 'Lahti, Finland');
+      html = html.replace(/{{RESTAURANT_ADDRESS}}/g, 'Rauhankatu 19 c, 15110');
       html = html.replace(/{{RESTAURANT_PHONE}}/g, '+358 3 589 9089');
 
       // Get recipient emails
@@ -409,7 +409,7 @@ export function EmailMarketing() {
                 )}
               </div>
               <div className="bg-gray-100 p-4 text-center text-sm text-gray-600">
-                Restaurant Antonio | Lahti, Finland
+                Restaurant Antonio | Rauhankatu 19 c, 15110 | +358 3 589 9089
               </div>
             </div>
           </div>

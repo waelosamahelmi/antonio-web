@@ -44,55 +44,52 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
   const navigationItems = [
     { href: "/", label: t("Etusivu", "Home", "الصفحة الرئيسية", "Главная", "Hem") },
     { href: "/menu", label: t("Menu", "Menu", "القائمة", "Меню", "Meny") },
-    { href: "/lounas", label: t("Lounas", "Lunch", "غداء", "Обед", "Lunch") },
+    // { href: "/lounas", label: t("Lounas", "Lunch", "غداء", "Обед", "Lunch") },
     { href: "/about", label: t("Meistä", "About", "معلومات عنا", "О нас", "Om oss") },
-    { href: "/branches", label: t("Pizzeriat", "Branches", "الفروع", "Филиалы", "Filialer") },
-    { href: "/locations", label: t("Ruokapisteet", "Locations", "المواقع", "Местоположения", "Platser") },
+    { href: "/contact", label: t("Yhteystiedot", "Contact", "اتصل بنا", "Контакты", "Kontakt") },
+    // { href: "/branches", label: t("Pizzeriat", "Branches", "الفروع", "Филиалы", "Filialer") },
+    // { href: "/locations", label: t("Ruokapisteet", "Locations", "المواقع", "Местоположения", "Platser") },
   ];
 
   return (
     <>
-      <header className="sticky top-0 z-50 bg-white/95 dark:bg-stone-900/95 backdrop-blur-md shadow-lg border-b border-gray-200/50 dark:border-stone-700/50">
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
             <Link href="/">
-              <div className="transform transition-transform hover:scale-105">
+              <div className="transform transition-all hover:scale-105 hover:opacity-80">
                 <Logo />
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex space-x-2">
+            <nav className="hidden lg:flex items-center gap-1">
               {navigationItems.map((item) => (
                 <Link key={item.href} href={item.href}>
                   <Button
                     variant="ghost"
-                    className={`text-gray-700 dark:text-gray-300 transition-all font-semibold px-6 py-5 rounded-xl relative group ${
-                      location === item.href ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg' : ''
+                    className={`relative px-4 py-2 font-medium transition-all rounded-full ${
+                      location === item.href 
+                        ? 'bg-primary text-primary-foreground shadow-md' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                     }`}
                   >
                     {item.label}
-                    {location === item.href && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-white rounded-full"></div>
-                    )}
-                    {location !== item.href && (
-                      <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-1 bg-gradient-to-r from-red-500 to-orange-500 rounded-full group-hover:w-8 transition-all duration-300"></div>
-                    )}
                   </Button>
                 </Link>
               ))}
             </nav>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center space-x-3">
+            <div className="hidden md:flex items-center gap-2">
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={toggleTheme}
-                className="px-3 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-stone-800 transition-all hover:scale-105"
+                className="rounded-full w-10 h-10 hover:bg-muted transition-all"
               >
-                {theme === "dark" ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-blue-600" />}
+                {theme === "dark" ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-slate-700" />}
               </Button>
               
               {/* Desktop Language Selection */}
@@ -104,77 +101,38 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
                     e.stopPropagation();
                     setIsLanguageMenuOpen(!isLanguageMenuOpen);
                   }}
-                  className="px-3 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-stone-800 flex items-center space-x-2 transition-all hover:scale-105"
+                  className="rounded-full px-3 h-10 hover:bg-muted flex items-center gap-2 transition-all"
                   title={t("Vaihda kieli", "Change language", "تغيير اللغة", "Изменить язык", "Byt språk")}
                 >
-                  <Globe className="w-5 h-5" />
-                  <span className="text-sm font-bold hidden sm:inline">
+                  <Globe className="w-4 h-4" />
+                  <span className="text-sm font-medium">
                     {language === "fi" ? "FI" : language === "en" ? "EN" : language === "ar" ? "AR" : language === "ru" ? "RU" : "SV"}
                   </span>
                 </Button>
                 
                 {isLanguageMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-40 bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-stone-700 z-50 overflow-hidden">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLanguage("fi");
-                        setIsLanguageMenuOpen(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-red-950 dark:hover:to-orange-950 transition-all text-sm font-medium ${
-                        language === "fi" ? "bg-gradient-to-r from-red-500 to-orange-500 text-white" : ""
-                      }`}
-                    >
-                      🇫🇮 Suomi
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLanguage("en");
-                        setIsLanguageMenuOpen(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-red-950 dark:hover:to-orange-950 transition-all text-sm font-medium ${
-                        language === "en" ? "bg-gradient-to-r from-red-500 to-orange-500 text-white" : ""
-                      }`}
-                    >
-                      🇺🇸 English
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLanguage("ar");
-                        setIsLanguageMenuOpen(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-red-950 dark:hover:to-orange-950 transition-all text-sm font-medium ${
-                        language === "ar" ? "bg-gradient-to-r from-red-500 to-orange-500 text-white" : ""
-                      }`}
-                    >
-                      🇸🇦 العربية
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLanguage("ru");
-                        setIsLanguageMenuOpen(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-red-950 dark:hover:to-orange-950 transition-all text-sm font-medium ${
-                        language === "ru" ? "bg-gradient-to-r from-red-500 to-orange-500 text-white" : ""
-                      }`}
-                    >
-                      🇷🇺 Русский
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setLanguage("sv");
-                        setIsLanguageMenuOpen(false);
-                      }}
-                      className={`w-full px-4 py-3 text-left hover:bg-gradient-to-r hover:from-red-50 hover:to-orange-50 dark:hover:from-red-950 dark:hover:to-orange-950 transition-all text-sm font-medium ${
-                        language === "sv" ? "bg-gradient-to-r from-red-500 to-orange-500 text-white" : ""
-                      }`}
-                    >
-                      🇸🇪 Svenska
-                    </button>
+                  <div className="absolute right-0 mt-2 w-44 bg-card rounded-xl shadow-xl border border-border z-50 overflow-hidden animate-fade-in-up">
+                    {[
+                      { code: "fi", label: "🇫🇮 Suomi" },
+                      { code: "en", label: "🇺🇸 English" },
+                      { code: "ar", label: "🇸🇦 العربية" },
+                      { code: "ru", label: "🇷🇺 Русский" },
+                      { code: "sv", label: "🇸🇪 Svenska" },
+                    ].map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setLanguage(lang.code as any);
+                          setIsLanguageMenuOpen(false);
+                        }}
+                        className={`w-full px-4 py-3 text-left hover:bg-muted transition-all text-sm font-medium ${
+                          language === lang.code ? "bg-primary text-primary-foreground" : "text-foreground"
+                        }`}
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
@@ -182,12 +140,12 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
               {onCartClick && (
                 <Button
                   onClick={onCartClick}
-                  className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-5 py-5 flex items-center justify-center relative rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all group"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 h-10 flex items-center gap-2 rounded-full shadow-md hover:shadow-lg transition-all shine-effect"
                   title={t("Kori", "Cart", "عربة التسوق", "Корзина", "Varukorg")}
                 >
-                  <ShoppingCart className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                  <ShoppingCart className="w-4 h-4" />
                   {totalItems > 0 && (
-                    <Badge className="absolute -top-2 -right-2 bg-yellow-400 text-gray-900 text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold animate-bounce shadow-lg">
+                    <Badge className="bg-secondary text-secondary-foreground text-xs px-2 py-0.5 rounded-full font-bold">
                       {totalItems}
                     </Badge>
                   )}
@@ -196,18 +154,18 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
             </div>
 
             {/* Mobile Actions */}
-            <div className="flex md:hidden items-center space-x-2">
+            <div className="flex md:hidden items-center gap-2">
               {/* Mobile Cart Button */}
               {onCartClick && (
                 <Button
                   onClick={onCartClick}
-                  className="bg-gradient-to-r from-red-500 to-orange-500 text-white p-3 flex items-center justify-center relative rounded-xl shadow-lg"
-                  size="sm"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground p-2.5 relative rounded-full shadow-md"
+                  size="icon"
                   title={t("Kori", "Cart", "عربة التسوق", "Корзина", "Varukorg")}
                 >
                   <ShoppingCart className="w-5 h-5" />
                   {totalItems > 0 && (
-                    <Badge className="absolute -top-1 -right-1 bg-yellow-400 text-gray-900 text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold animate-bounce">
+                    <Badge className="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">
                       {totalItems}
                     </Badge>
                   )}
@@ -217,12 +175,12 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
               {/* Mobile Menu Button */}
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={(e) => {
                   e.stopPropagation();
                   setIsMobileMenuOpen(!isMobileMenuOpen);
                 }}
-                className="p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-stone-800"
+                className="p-2.5 rounded-full hover:bg-muted"
                 title={t("Valikko", "Menu", "القائمة", "Меню", "Meny")}
               >
                 {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -235,22 +193,22 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
-          <div className="fixed top-20 right-0 w-80 h-[calc(100vh-5rem)] bg-white dark:bg-stone-900 shadow-2xl overflow-y-auto rounded-l-3xl">
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setIsMobileMenuOpen(false)}></div>
+          <div className="fixed top-16 right-0 w-full max-w-sm h-[calc(100vh-4rem)] bg-card shadow-2xl overflow-y-auto border-l border-border">
             <div className="p-6 space-y-6">
               {/* Mobile Navigation Links */}
-              <div className="space-y-2">
-                <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-3">
                   {t("Navigaatio", "Navigation", "التنقل", "Навигация", "Navigation")}
                 </p>
                 {navigationItems.map((item) => (
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-start text-left py-4 rounded-xl font-semibold transition-all ${
+                      className={`w-full justify-start text-left py-3 px-3 rounded-xl font-medium transition-all ${
                         location === item.href 
-                          ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg' 
-                          : 'hover:bg-gray-100 dark:hover:bg-stone-800'
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'hover:bg-muted text-foreground'
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -260,58 +218,51 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
                 ))}
               </div>
 
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-6 space-y-4">
+              <div className="border-t border-border pt-6 space-y-4">
                 {/* Mobile Theme Toggle */}
                 <Button
                   variant="ghost"
                   onClick={toggleTheme}
-                  className="w-full justify-start py-4 rounded-xl hover:bg-gray-100 dark:hover:bg-stone-800 font-medium"
+                  className="w-full justify-start py-3 px-3 rounded-xl hover:bg-muted font-medium"
                 >
                   {theme === "dark" ? (
                     <>
-                      <Sun className="w-5 h-5 mr-3 text-yellow-400" />
+                      <Sun className="w-5 h-5 mr-3 text-yellow-500" />
                       {t("Vaalea teema", "Light theme", "مظهر فاتح", "Светлая тема", "Ljust tema")}
                     </>
                   ) : (
                     <>
-                      <Moon className="w-5 h-5 mr-3 text-blue-600" />
+                      <Moon className="w-5 h-5 mr-3 text-slate-700" />
                       {t("Tumma teema", "Dark theme", "مظهر داكن", "Тёмная тема", "Mörkt tema")}
                     </>
                   )}
                 </Button>
 
                 {/* Mobile Language Selection */}
-                <div className="space-y-3">
-                  <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <div className="space-y-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3">
                     {t("Kieli", "Language", "اللغة", "Язык", "Språk")}
                   </p>
-                  <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        setLanguage("fi");
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                        language === "fi" 
-                          ? "bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg" 
-                          : "hover:bg-gray-100 dark:hover:bg-stone-800"
-                      }`}
-                    >
-                      🇫🇮 Suomi
-                    </button>
-                    <button
-                      onClick={() => {
-                        setLanguage("en");
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                        language === "en" 
-                          ? "bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg" 
-                          : "hover:bg-gray-100 dark:hover:bg-stone-800"
-                      }`}
-                    >
-                      🇺🇸 English
-                    </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { code: "fi", label: "🇫🇮 Suomi" },
+                      { code: "en", label: "🇺🇸 English" },
+                    ].map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          setLanguage(lang.code as any);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`text-left px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                          language === lang.code 
+                            ? "bg-primary text-primary-foreground" 
+                            : "hover:bg-muted text-foreground"
+                        }`}
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>

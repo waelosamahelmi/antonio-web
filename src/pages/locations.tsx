@@ -34,15 +34,15 @@ export default function Locations() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-stone-900">
+    <div className="min-h-screen bg-background">
       <UniversalHeader />
       
       {/* Page Header */}
-      <div className="relative bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white py-24 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-primary via-primary/90 to-primary/80 text-white py-24 overflow-hidden">
         {/* Animated background patterns */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }}></div>
         </div>
         
         <div className="max-w-7xl mx-auto px-4 text-center relative">
@@ -71,7 +71,7 @@ export default function Locations() {
         <div className="max-w-7xl mx-auto px-4">
           {isLoading ? (
             <div className="flex justify-center items-center py-20">
-              <Loader2 className="w-12 h-12 animate-spin text-blue-600" />
+              <Loader2 className="w-12 h-12 animate-spin text-primary" />
             </div>
           ) : (
             <div className="space-y-16">
@@ -79,11 +79,11 @@ export default function Locations() {
                 <div key={region} className="animate-fade-in">
                   {/* Region Header */}
                   <div className="mb-8">
-                    <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-2 flex items-center gap-4">
-                      <div className="w-2 h-12 bg-gradient-to-b from-blue-600 to-indigo-600 rounded-full"></div>
+                    <h2 className="text-4xl font-black text-foreground mb-2 flex items-center gap-4">
+                      <div className="w-2 h-12 bg-gradient-to-b from-primary to-primary/60 rounded-full"></div>
                       {region}
                     </h2>
-                    <div className="ml-6 w-32 h-1 bg-gradient-to-r from-blue-600 to-transparent rounded-full"></div>
+                    <div className="ml-6 w-32 h-1 bg-gradient-to-r from-primary to-transparent rounded-full"></div>
                   </div>
 
                   {/* Location Cards */}
@@ -93,37 +93,37 @@ export default function Locations() {
                       return (
                         <Card 
                           key={location.id} 
-                          className="group hover:shadow-2xl transition-all duration-500 border-0 bg-white dark:bg-stone-800 overflow-hidden relative"
+                          className="group hover:shadow-2xl transition-all duration-500 border-0 bg-card overflow-hidden relative"
                         >
-                          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
+                          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-primary via-primary/80 to-secondary"></div>
                           <CardContent className="p-6">
                             <div className="flex items-start gap-4">
                               <div className="flex-shrink-0">
                                 {location.logo_url ? (
-                                  <div className="w-20 h-20 rounded-2xl bg-white dark:bg-stone-700 flex items-center justify-center shadow-lg group-hover:scale-110 transition-all overflow-hidden p-2">
+                                  <div className="w-20 h-20 rounded-2xl bg-card border border-border flex items-center justify-center shadow-lg group-hover:scale-110 transition-all overflow-hidden p-2">
                                     <img 
                                       src={location.logo_url} 
                                       alt={location.name}
                                       className="w-full h-full object-contain"
                                       onError={(e) => {
                                         e.currentTarget.style.display = 'none';
-                                        e.currentTarget.parentElement?.classList.add('bg-gradient-to-br', 'from-blue-500', 'to-indigo-600');
+                                        e.currentTarget.parentElement?.classList.add('bg-gradient-to-br', 'from-primary', 'to-secondary');
                                       }}
                                     />
                                   </div>
                                 ) : (
-                                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all">
+                                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all">
                                     <IconComponent className="w-7 h-7 text-white" />
                                   </div>
                                 )}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 transition-colors">
+                                <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                                   {location.name}
                                 </h3>
                                 <div className="space-y-2">
-                                  <div className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
-                                    <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5 text-blue-600" />
+                                  <div className="flex items-start gap-2 text-muted-foreground">
+                                    <MapPin className="w-5 h-5 flex-shrink-0 mt-0.5 text-primary" />
                                     <div className="text-sm">
                                       <div>{location.address}</div>
                                       <div className="font-medium">
@@ -136,7 +136,7 @@ export default function Locations() {
                                   href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${location.address}, ${location.postal_code} ${location.city}`)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-blue-600 hover:text-blue-700 transition-colors group-hover:gap-3"
+                                  className="inline-flex items-center gap-2 mt-4 text-sm font-bold text-primary hover:text-primary/80 transition-colors group-hover:gap-3"
                                 >
                                   {t("Avaa kartassa", "Open in Maps")}
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,11 +157,11 @@ export default function Locations() {
 
           {!isLoading && locationsByRegion && Object.keys(locationsByRegion).length === 0 && (
             <div className="text-center py-20">
-              <MapPin className="w-20 h-20 mx-auto mb-6 text-gray-400" />
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              <MapPin className="w-20 h-20 mx-auto mb-6 text-muted-foreground" />
+              <h3 className="text-2xl font-bold text-foreground mb-2">
                 {t("Ei toimipisteitä", "No locations yet")}
               </h3>
-              <p className="text-gray-600 dark:text-gray-400">
+              <p className="text-muted-foreground">
                 {t("Toimipisteet lisätään pian", "Locations will be added soon")}
               </p>
             </div>
