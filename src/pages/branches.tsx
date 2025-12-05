@@ -193,12 +193,12 @@ export default function Branches() {
           <div className="inline-block mb-6">
             <div className="bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full border border-white/30 shadow-lg">
               <span className="text-sm font-bold uppercase tracking-wider">
-                {t("Löydä lähimmät ravintolat", "Find Our Restaurants", "ابحث عن مطاعمنا")}
+                {t("Löydä lähimmät pizzeriat", "Find Our Restaurants", "ابحث عن مطاعمنا")}
               </span>
             </div>
           </div>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in">
-            {t("Ravintolat", "Our Branches", "فروعنا")}
+            {t("Pizzeriat", "Our Branches", "فروعنا")}
           </h1>
           <p className="text-xl md:text-3xl opacity-90 max-w-3xl mx-auto font-light">
             {t("Meillä on useita ravintoloita palvelemaan sinua", "We have multiple locations to serve you", "لدينا عدة مواقع لخدمتك")}
@@ -230,7 +230,7 @@ export default function Branches() {
                 {t("Ei ravintoloita", "No branches yet", "لا توجد فروع بعد")}
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                {t("Ravintolat lisätään pian", "Branches will be added soon", "سيتم إضافة الفروع قريبًا")}
+                {t("Pizzeriat lisätään pian", "Branches will be added soon", "سيتم إضافة الفروع قريبًا")}
               </p>
             </div>
           )}

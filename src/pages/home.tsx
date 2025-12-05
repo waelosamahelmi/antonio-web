@@ -211,7 +211,7 @@ export default function Home() {
                         {t("Tilaa puhelimitse", "Order by Phone")}
                       </h3>
                       <p className="text-gray-600 dark:text-gray-300 leading-relaxed mb-6 text-lg group-hover:text-white/90 transition-colors">
-                        {t("Nopea tilaus suoraan ravintolaan", "Quick order directly to restaurant")}
+                        {t("Nopea tilaus suoraan pizzeriaan", "Quick order directly to restaurant")}
                       </p>
                       <div className="flex items-center gap-3">
                         <div className="text-2xl font-black group-hover:text-white transition-colors" style={{ color: theme.success }}>

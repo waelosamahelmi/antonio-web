@@ -257,7 +257,7 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
       const branchName = language === 'fi' ? selectedBranch.name : selectedBranch.name_en;
 
       toast({
-        title: t("Ravintola suljettu", "Restaurant closed"),
+        title: t("Pizzeria suljettu", "Restaurant closed"),
         description: nextOpening
           ? t(
               `${branchName} on suljettu. Avautuu ${language === 'fi' ? nextOpening.day : nextOpening.dayEn} klo ${nextOpening.time}`,
@@ -435,7 +435,7 @@ export function CheckoutModal({ isOpen, onClose, onBack }: CheckoutModalProps) {
         console.log('⚠️ Checkout: Restaurant is BUSY - closing modal');
         onClose();
         toast({
-          title: t("ravintola on kiireinen", "Restaurant is busy"),
+          title: t("pizzeria on kiireinen", "Restaurant is busy"),
           description: t("Olemme tällä hetkellä todella kiireisiä. Yritä uudelleen hetken kuluttua.", "We're very busy right now. Please try again in a moment."),
           variant: "destructive"
         });

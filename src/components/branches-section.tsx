@@ -57,7 +57,7 @@ export function BranchesSection() {
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             {t(
-              "Palvelemme sinua useammassa toimipisteessä. Valitse lähin ravintola tilauksen yhteydessä.",
+              "Palvelemme sinua useammassa toimipisteessä. Valitse lähin pizzeria tilauksen yhteydessä.",
               "We serve you at multiple locations. Choose the nearest restaurant when placing your order."
             )}
           </p>

@@ -57,8 +57,8 @@ export function MultiBranchStatusHeaderV2() {
                 }`}></div>
                 <span className="text-sm font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-100 dark:to-gray-300 bg-clip-text text-transparent">
                   {effectiveIsOpen
-                    ? t("Ravintolat avoinna", "Restaurants Open")
-                    : t("Ravintolat suljettu", "Restaurants Closed")
+                    ? t("Pizzeriat avoinna", "Restaurants Open")
+                    : t("Pizzeriat suljettu", "Restaurants Closed")
                   }
                 </span>
               </div>

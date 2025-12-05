@@ -38,7 +38,7 @@ export function Hero() {
       <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-4">
         <div className="animate-fade-in">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            {t("Ravintola Babylon", "Ravintola Babylon")}
+            {t("Pizzeria Antonio", "Pizzeria Antonio")}
           </h1>
           <p className="text-2xl md:text-3xl mb-4 font-light">
             {t("Tervetuloa!", "Welcome!")}
@@ -47,8 +47,8 @@ export function Hero() {
         
         <p className="text-xl md:text-2xl mb-8 text-gray-200 animate-slide-up max-w-3xl mx-auto">
           {t(
-            "Tuoreista raaka-aineista valmistetut herkut Utin sydämessä - pizza, kebab ja paljon muuta",
-            "Delicacies made from fresh ingredients in the heart of Lahti - pizza, kebab and much more"
+            "Aitoja italialaisia makuja tuoreista raaka-aineista - pizza, kebab ja paljon muuta",
+            "Authentic Italian flavors from fresh ingredients - pizza, kebab and much more"
           )}
         </p>
 

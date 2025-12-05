@@ -43,13 +43,13 @@ export function Header({ onCartClick }: HeaderProps) {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-600 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-600 rounded-full flex items-center justify-center">
                 <UtensilsCrossed className="text-white w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
                 <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
-                  <span className="hidden sm:inline">Ravintola Babylon</span>
-                  <span className="sm:hidden">babylon</span>
+                  <span className="hidden sm:inline">Pizzeria Antonio</span>
+                  <span className="sm:hidden">antonio</span>
                 </h1>
               </div>
             </div>
@@ -70,12 +70,12 @@ export function Header({ onCartClick }: HeaderProps) {
               </a>
               <a
                 href="contact"
-                className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors font-medium"
+                className="text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors font-medium"
               >
                 {t("Yhteystiedot", "Contact")}
               </a>
               <a
-                href="https://admin.ravintolababylon.fi"
+                href="https://admin.pizzeriaantonio.fi"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium text-sm"
@@ -214,13 +214,13 @@ export function Header({ onCartClick }: HeaderProps) {
                 </a>
                 <a
                   href="contact"
-                  className="block text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors font-medium py-2"
+                  className="block text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors font-medium py-2"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t("Yhteystiedot", "Contact")}
                 </a>
                 <a
-                  href="https://admin.ravintolababylon.fi"
+                  href="https://admin.pizzeriaantonio.fi"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium py-2 text-sm border-t border-gray-200 dark:border-gray-700 pt-4 mt-2"

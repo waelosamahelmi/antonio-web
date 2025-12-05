@@ -179,10 +179,10 @@ export default function Privacy() {
               <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg mt-4">
                 <p>
                   <strong>Tietosuojavastaava / Data Protection Officer</strong><br />
-                  Ravintola Babylon<br />
-                  Vapaudenkatu 28, 15140 Lahti<br />
-                  Sähköposti: info@ravintolababylon.fi<br />
-                  Puhelin: +35835899089
+                  Pizzeria Antonio<br />
+                  Rauhankatu 19 c, 15110 Lahti<br />
+                  Sähköposti: info@pizzeriaantonio.fi<br />
+                  Puhelin: +358401234567
                 </p>
               </div>
             </CardContent>

@@ -179,7 +179,7 @@ export function EmailMarketing() {
       html = html.replace('{{SUBTITLE}}', emailSubject);
       html = html.replace('{{CONTENT}}', emailContent.replace(/\n/g, '<br>'));
       html = html.replace('{{LINK}}', emailLink || '#');
-      html = html.replace(/{{RESTAURANT_NAME}}/g, 'Restaurant Babylon');
+      html = html.replace(/{{RESTAURANT_NAME}}/g, 'Restaurant Antonio');
       html = html.replace(/{{RESTAURANT_ADDRESS}}/g, 'Lahti, Finland');
       html = html.replace(/{{RESTAURANT_PHONE}}/g, '+358 3 589 9089');
 
@@ -409,7 +409,7 @@ export function EmailMarketing() {
                 )}
               </div>
               <div className="bg-gray-100 p-4 text-center text-sm text-gray-600">
-                Restaurant Babylon | Lahti, Finland
+                Restaurant Antonio | Lahti, Finland
               </div>
             </div>
           </div>

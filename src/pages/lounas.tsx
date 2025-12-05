@@ -447,7 +447,7 @@ export default function Lounas() {
                     {t("Lounas tarjoillaan", "Lunch is served", "يتم تقديم الغداء", "Обед подается", "Lunch serveras")}{" "}
                     {formatTime(lounasSettings.start_time)} - {formatTime(lounasSettings.end_time)}.{" "}
                     {t(
-                      "Allergiat ja erityisruokavaliot huomioidaan tilauksen yhteydessä. Ota yhteyttä ravintolaan lisätietojen saamiseksi.",
+                      "Allergiat ja erityisruokavaliot huomioidaan tilauksen yhteydessä. Ota yhteyttä pizzeriaan lisätietojen saamiseksi.",
                       "Allergies and special diets are noted when ordering. Contact the restaurant for more information.",
                       "يتم ملاحظة الحساسية والوجبات الخاصة عند الطلب. اتصل بالمطعم لمزيد من المعلومات.",
                       "Аллергии и особые диеты учитываются при заказе. Свяжитесь с рестораном для получения дополнительной информации.",
@@ -456,7 +456,7 @@ export default function Lounas() {
                   </>
                 ) : (
                   t(
-                    "Lounas tarjoillaan arkisin klo 10:30 - 14:00. Allergiat ja erityisruokavaliot huomioidaan tilauksen yhteydessä. Ota yhteyttä ravintolaan lisätietojen saamiseksi.",
+                    "Lounas tarjoillaan arkisin klo 10:30 - 14:00. Allergiat ja erityisruokavaliot huomioidaan tilauksen yhteydessä. Ota yhteyttä pizzeriaan lisätietojen saamiseksi.",
                     "Lunch is served on weekdays from 10:30 - 14:00. Allergies and special diets are noted when ordering. Contact the restaurant for more information.",
                     "يتم تقديم الغداء في أيام الأسبوع من 10:30 - 14:00. يتم ملاحظة الحساسية والوجبات الخاصة عند الطلب. اتصل بالمطعم لمزيد من المعلومات.",
                     "Обед подается по будням с 10:30 до 14:00. Аллергии и особые диеты учитываются при заказе. Свяжитесь с рестораном для получения дополнительной информации.",

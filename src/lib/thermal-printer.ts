@@ -428,10 +428,10 @@ class ThermalPrinterService {
   private generateTestReceipt(): string {
     return `
 ==============================
-        Ravintola Babylon
+        Pizzeria Antonio
 ==============================
-      Vapaudenkatu 28, 15140 Lahti
-        +358-3781-2222
+      Rauhankatu 19 c, 15110 Lahti
+        +358-401234567
 
 ------------------------------
            TEST PRINT
@@ -464,18 +464,18 @@ printer connectivity.
     
     // Logo/Header - Improved design
     receipt += escCenter + escBold + escDoubleLarge;
-    receipt += '***  BABYLON  ***' + lineFeed;
+    receipt += '***  ANTONIO  ***' + lineFeed;
     receipt += escNormal + escBoldOff;
     receipt += escCenter + escLarge;
-    receipt += 'Ravintola & Pizzeria' + lineFeed;
+    receipt += 'Pizzeria & Pizzeria' + lineFeed;
     receipt += escNormal;
     receipt += '==============================' + lineFeed;
     receipt += escBold;
-    receipt += 'Vapaudenkatu 28, 15140 Lahti' + lineFeed;
-    receipt += 'Puh: +358-3781-2222' + lineFeed;
+    receipt += 'Rauhankatu 19 c, 15110 Lahti' + lineFeed;
+    receipt += 'Puh: +358-401234567' + lineFeed;
     receipt += escBoldOff;
-    receipt += 'info@ravintolababylon.fi' + lineFeed;
-    receipt += 'www.ravintolababylon.fi' + lineFeed;
+    receipt += 'info@pizzeriaantonio.fi' + lineFeed;
+    receipt += 'www.pizzeriaantonio.fi' + lineFeed;
     receipt += '==============================' + lineFeed;
     receipt += lineFeed;
     
@@ -648,24 +648,24 @@ printer connectivity.
     receipt += '==============================' + lineFeed;
     receipt += lineFeed;
     receipt += escBold;
-    receipt += 'RAVINTOLA BABYLON' + lineFeed;
+    receipt += 'PIZZERIA ANTONIO' + lineFeed;
     receipt += escBoldOff;
-    receipt += 'Vapaudenkatu 28, 15140 Lahti' + lineFeed;
+    receipt += 'Rauhankatu 19 c, 15110 Lahti' + lineFeed;
     receipt += lineFeed;
     receipt += escBold;
     receipt += 'AUKIOLOAJAT / OPENING HOURS' + lineFeed;
     receipt += escBoldOff;
-    receipt += 'Ma-Su / Mon-Sun: 10:00-20:00' + lineFeed;
+    receipt += 'Ma-Su / Mon-Sun: 10:00-21:00' + lineFeed;
     receipt += 'Kotiinkuljetus / Delivery:' + lineFeed;
-    receipt += 'Ma-To, Pe-Su: 10:00-19:30' + lineFeed;
+    receipt += 'Ma-To, Pe-Su: 10:00-20:30' + lineFeed;
     receipt += lineFeed;
-    receipt += 'Puh / Tel: +358-3781-2222' + lineFeed;
-    receipt += 'www.ravintolababylon.fi' + lineFeed;
+    receipt += 'Puh / Tel: +358-401234567' + lineFeed;
+    receipt += 'www.pizzeriaantonio.fi' + lineFeed;
     receipt += lineFeed;
     receipt += escBold;
     receipt += 'Seuraa meitä / Follow us:' + lineFeed;
     receipt += escBoldOff;
-    receipt += '@ravintolaU triva' + lineFeed;
+    receipt += '@pizzeriaantonio' + lineFeed;
     receipt += lineFeed;
     receipt += '==============================' + lineFeed;
     receipt += lineFeed + lineFeed + lineFeed;

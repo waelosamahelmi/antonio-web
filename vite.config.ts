@@ -33,11 +33,11 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'https://babylon-admin.fly.dev/',
+        target: 'https://antonio-admin.fly.dev/',
         changeOrigin: true,
       },
       '/ws': {
-        target: 'wss://babylon-admin.fly.dev',
+        target: 'wss://antonio-admin.fly.dev',
         ws: true,
         changeOrigin: true,
       },

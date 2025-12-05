@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Placeholder Pizza Image</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-width: 600px;
+    }
+    h1 {
+      color: #111827;
+      margin-top: 0;
+    }
+    .preview {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .preview-item {
+      border: 2px solid #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .preview-item img {
+      display: block;
+    }
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+    pre {
+      background: #1f2937;
+      color: #f3f4f6;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍕 Placeholder Pizza Image</h1>
+    <p>This is the grey placeholder image for menu items without images in Pizzeria Antonio.</p>
+    
+    <h2>Preview Sizes</h2>
+    <div class="preview">
+      <div class="preview-item">
+        <img src="placeholder-pizza.svg" width="100" height="100" alt="Small preview">
+        <p style="margin: 5px; font-size: 12px; text-align: center;">100x100</p>
+      </div>
+      <div class="preview-item">
+        <img src="placeholder-pizza.svg" width="200" height="200" alt="Medium preview">
+        <p style="margin: 5px; font-size: 12px; text-align: center;">200x200</p>
+      </div>
+      <div class="preview-item">
+        <img src="placeholder-pizza.svg" width="400" height="400" alt="Large preview">
+        <p style="margin: 5px; font-size: 12px; text-align: center;">400x400</p>
+      </div>
+    </div>
+    
+    <h2>Usage in Code</h2>
+    <p>Use this image as a fallback when menu item images fail to load:</p>
+    <pre><code>&lt;img 
+  src={menuItem.image || '/placeholder-pizza.svg'} 
+  alt={menuItem.name}
+  onError={(e) => {
+    e.currentTarget.src = '/placeholder-pizza.svg';
+  }}
+/&gt;</code></pre>
+    
+    <h2>Features</h2>
+    <ul>
+      <li>✅ SVG format - scales perfectly at any size</li>
+      <li>✅ Minimal file size - no network overhead</li>
+      <li>✅ Grey neutral color palette</li>
+      <li>✅ Pizza icon design fits restaurant theme</li>
+      <li>✅ Clear "No Image Available" text</li>
+    </ul>
+  </div>
+</body>
+</html>

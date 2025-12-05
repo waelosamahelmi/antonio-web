@@ -56,7 +56,7 @@ export function generateRestaurantStructuredData(restaurant: RestaurantSEOData):
     '@type': 'Restaurant',
     name: restaurant.name,
     description: restaurant.description || `${restaurant.name} - Tilaa verkossa tai syö paikan päällä`,
-    url: `https://${restaurant.slug || 'ravintola'}.plateos.fi`,
+    url: `https://${restaurant.slug || 'pizzeria'}.plateos.fi`,
     logo: restaurant.logo || '/logo.png',
     image: restaurant.logo || '/logo.png',
     telephone: restaurant.phone,
@@ -76,7 +76,7 @@ export function generateRestaurantStructuredData(restaurant: RestaurantSEOData):
         '@type': 'OrderAction',
         target: {
           '@type': 'EntryPoint',
-          urlTemplate: `https://${restaurant.slug || 'ravintola'}.plateos.fi/menu`,
+          urlTemplate: `https://${restaurant.slug || 'pizzeria'}.plateos.fi/menu`,
           actionPlatform: [
             'http://schema.org/DesktopWebPlatform',
             'http://schema.org/MobileWebPlatform',

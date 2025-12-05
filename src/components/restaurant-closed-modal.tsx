@@ -34,8 +34,8 @@ export function RestaurantClosedModal({ isOpen, onClose }: RestaurantClosedModal
             <Store className="w-5 h-5" />
             <span>
               {isBusy 
-                ? t("ravintola on kiireinen", "Restaurant is Busy")
-                : t("ravintola suljettu", "Restaurant Closed")
+                ? t("pizzeria on kiireinen", "Restaurant is Busy")
+                : t("pizzeria suljettu", "Restaurant Closed")
               }
             </span>
           </DialogTitle>
@@ -104,7 +104,7 @@ export function RestaurantClosedModal({ isOpen, onClose }: RestaurantClosedModal
               {branches && branches.length > 1 && (
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                   {t(
-                    "Näet kaikkien ravintoloidemme aukioloajat Ravintolat-sivulta",
+                    "Näet kaikkien ravintoloidemme aukioloajat Pizzeriat-sivulta",
                     "See all branch hours on the Branches page"
                   )}
                 </p>
@@ -150,7 +150,7 @@ export function RestaurantClosedModal({ isOpen, onClose }: RestaurantClosedModal
                     }}
                   >
                     <Store className="w-4 h-4 mr-2" />
-                    {t("Katso kaikki ravintolat", "View all branches")}
+                    {t("Katso kaikki pizzeriat", "View all branches")}
                   </Button>
                 )}
               </div>

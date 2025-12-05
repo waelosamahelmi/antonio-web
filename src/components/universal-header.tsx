@@ -46,7 +46,7 @@ export function UniversalHeader({ onCartClick }: UniversalHeaderProps) {
     { href: "/menu", label: t("Menu", "Menu", "القائمة", "Меню", "Meny") },
     { href: "/lounas", label: t("Lounas", "Lunch", "غداء", "Обед", "Lunch") },
     { href: "/about", label: t("Meistä", "About", "معلومات عنا", "О нас", "Om oss") },
-    { href: "/branches", label: t("Ravintolat", "Branches", "الفروع", "Филиалы", "Filialer") },
+    { href: "/branches", label: t("Pizzeriat", "Branches", "الفروع", "Филиалы", "Filialer") },
     { href: "/locations", label: t("Ruokapisteet", "Locations", "المواقع", "Местоположения", "Platser") },
   ];
 

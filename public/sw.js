@@ -1,5 +1,5 @@
-const CACHE_NAME = 'babylon-customer-v4';
-const STATIC_CACHE_NAME = 'babylon-static-v4';
+const CACHE_NAME = 'antonio-customer-v4';
+const STATIC_CACHE_NAME = 'antonio-static-v4';
 
 // Cache static assets only
 const urlsToCache = [

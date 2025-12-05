@@ -7,7 +7,7 @@
  * 2. Set environment variables in .env:
  *    VITE_SMTP_HOST=smtp.hostinger.com
  *    VITE_SMTP_PORT=587
- *    VITE_SMTP_USER=no-reply@ravintolababylon.fi
+ *    VITE_SMTP_USER=halemiraoy@gmail.com
  *    VITE_SMTP_PASS=your-password
  */
 
@@ -56,7 +56,7 @@ export function generateOrderConfirmationHTML(data: OrderEmailData, language: 'f
       orderType: {
         delivery: 'Kotiinkuljetus',
         pickup: 'Nouto',
-        'dine-in': 'Ravintolassa'
+        'dine-in': 'Pizzeriassa'
       },
       items: 'Tilauksen sisältö',
       quantity: 'Määrä',
@@ -66,7 +66,7 @@ export function generateOrderConfirmationHTML(data: OrderEmailData, language: 'f
       smallOrderFee: 'Pienkäsittelymaksu',
       total: 'Yhteensä',
       deliveryAddress: 'Toimitusosoite',
-      branch: 'Ravintola',
+      branch: 'Pizzeria',
       specialInstructions: 'Erityisohjeet',
       paymentMethod: 'Maksutapa',
       payment: {
@@ -232,7 +232,7 @@ export function generateOrderConfirmationHTML(data: OrderEmailData, language: 'f
     .footer .restaurant-name {
       font-size: 18px;
       font-weight: bold;
-      color: #8B4513;
+      color: #16A34A;
       margin-bottom: 10px;
     }
   </style>
@@ -241,7 +241,7 @@ export function generateOrderConfirmationHTML(data: OrderEmailData, language: 'f
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <h1>Ravintola Babylon</h1>
+      <h1>Pizzeria Antonio</h1>
     </div>
 
     <!-- Content -->
@@ -343,12 +343,12 @@ export function generateOrderConfirmationHTML(data: OrderEmailData, language: 'f
 
     <!-- Footer -->
     <div class="footer">
-      <div class="restaurant-name">Ravintola Babylon</div>
+      <div class="restaurant-name">Pizzeria Antonio</div>
       <p>${text.regards}</p>
       <p>
         <strong>${language === 'fi' ? 'Yhteystiedot' : 'Contact'}:</strong><br>
-        +358 3 589 9089<br>
-        info@ravintolababylon.fi
+        +358 401 234 567<br>
+        info@pizzeriaantonio.fi
       </p>
     </div>
   </div>
@@ -399,7 +399,7 @@ export async function sendOrderConfirmationEmail(
           ? `Tilausvahvistus - ${data.orderNumber}`
           : `Order Confirmation - ${data.orderNumber}`,
         html: htmlContent,
-        replyTo: 'info@ravintolababylon.fi'
+        replyTo: 'info@pizzeriaantonio.fi'
       })
     });
 

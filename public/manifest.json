@@ -1,8 +1,8 @@
 {
-  "name": "Ravintola Babylon",
-  "short_name": "babylon",
-  "description": "Finnish restaurant offering pizza, kebab, and traditional cuisine",
-  "theme_color": "#dc2626",
+  "name": "Pizzeria Antonio",
+  "short_name": "antonio",
+  "description": "Italian restaurant offering authentic pizza and kebab",
+  "theme_color": "#16A34A",
   "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait",

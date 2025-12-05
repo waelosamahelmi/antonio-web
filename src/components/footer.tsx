@@ -105,7 +105,7 @@ export function Footer() {
               <li>
                 <a href="/branches" className="text-gray-400 hover:text-white transition-colors flex items-center group">
                   <div className="w-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 group-hover:w-4 transition-all mr-0 group-hover:mr-2"></div>
-                  {t("Ravintolat", "Branches")}
+                  {t("Pizzeriat", "Branches")}
                 </a>
               </li>
               <li>

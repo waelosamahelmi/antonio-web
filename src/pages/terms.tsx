@@ -44,8 +44,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  "Ravintola Babylonn verkkopalvelu on tarkoitettu ruoan tilaamiseen ja ravintolan tietojen katseluun. Käyttämällä palvelua hyväksyt nämä käyttöehdot.",
-                  "Ravintola Babylon's web service is intended for food ordering and viewing restaurant information. By using the service, you accept these terms of use."
+                  "Pizzeria Antonion verkkopalvelu on tarkoitettu ruoan tilaamiseen ja pizzerian tietojen katseluun. Käyttämällä palvelua hyväksyt nämä käyttöehdot.",
+                  "Pizzeria Antonio's web service is intended for food ordering and viewing restaurant information. By using the service, you accept these terms of use."
                 )}
               </p>
             </CardContent>
@@ -58,7 +58,7 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  "Kaikki tilaukset ovat sitovia. Maksu tapahtuu toimituksen yhteydessä käteisellä tai kortilla. Peruutukset on tehtävä viimeistään 15 minuLahtia tilauksen jälkeen.",
+                  "Kaikki tilaukset ovat sitovia. Maksu tapahtuu toimituksen yhteydessä käteisellä tai kortilla. Peruutukset on tehtävä viimeistään 15 minuuttia tilauksen jälkeen.",
                   "All orders are binding. Payment is made upon delivery with cash or card. Cancellations must be made no later than 15 minutes after ordering."
                 )}
               </p>
@@ -77,8 +77,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  "Toimitusaika on arvio ja voi vaihdella ruuhka-aikoina. Toimitamme Lahden ja lähialueiden alueella. Toimitusmaksut vaihtelevat etäisyyden mukaan.",
-                  "Delivery time is an estimate and may vary during peak hours. We deliver in the Lahti and surrounding areas. Delivery fees vary by distance."
+                  "Toimitusaika on arvio ja voi vaihdella ruuhka-aikoina. Toimitamme lähialueelle. Toimitusmaksut vaihtelevat etäisyyden mukaan.",
+                  "Delivery time is an estimate and may vary during peak hours. We deliver in the surrounding areas. Delivery fees vary by distance."
                 )}
               </p>
             </CardContent>
@@ -105,8 +105,8 @@ export default function Terms() {
             <CardContent className="prose dark:prose-invert max-w-none">
               <p>
                 {t(
-                  "Ravintola Babylon ei vastaa mahdollisista teknisistä ongelmista verkkopalvelussa. Reklamaatiot ruoasta tulee tehdä 24 tunnin sisällä toimituksesta.",
-                  "Ravintola Babylon is not responsible for possible technical problems in the web service. Food complaints must be made within 24 hours of delivery."
+                  "Pizzeria Antonio ei vastaa mahdollisista teknisistä ongelmista verkkopalvelussa. Reklamaatiot ruoasta tulee tehdä 24 tunnin sisällä toimituksesta.",
+                  "Pizzeria Antonio is not responsible for possible technical problems in the web service. Food complaints must be made within 24 hours of delivery."
                 )}
               </p>
             </CardContent>
@@ -124,10 +124,10 @@ export default function Terms() {
                 )}
               </p>
               <p>
-                <strong>Ravintola Babylon</strong><br />
-                Vapaudenkatu 28, 15140 Lahti<br />
-                Puhelin: +35835899089<br />
-                Sähköposti: info@ravintolababylon.fi
+                <strong>Pizzeria Antonio</strong><br />
+                Rauhankatu 19 c, 15110 Lahti<br />
+                Puhelin: +358401234567<br />
+                Sähköposti: info@pizzeriaantonio.fi
               </p>
             </CardContent>
           </Card>

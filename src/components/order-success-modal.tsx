@@ -92,17 +92,17 @@ export function OrderSuccessModal({ isOpen, onClose, orderType, orderNumber }: O
           </div>
 
           {/* Restaurant Info */}
-          <Card className="bg-red-50 dark:bg-red-900/20 border-red-200">
+          <Card className="bg-green-50 dark:bg-green-900/20 border-green-200">
             <CardContent className="p-4">
               <div className="text-center space-y-1">
-                <p className="font-semibold text-red-800 dark:text-red-200">
-                  Ravintola Babylon
+                <p className="font-semibold text-green-800 dark:text-green-200">
+                  Pizzeria Antonio
                 </p>
-                <p className="text-sm text-red-700 dark:text-red-300">
-                  Vapaudenkatu 28, 15140 Lahti
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  Rauhankatu 19 c, 15110 Lahti
                 </p>
-                <p className="text-sm text-red-700 dark:text-red-300">
-                  +358-3781-2222
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  +358-401234567
                 </p>
               </div>
             </CardContent>

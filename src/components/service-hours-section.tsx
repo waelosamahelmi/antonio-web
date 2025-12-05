@@ -56,7 +56,7 @@ export function ServiceHoursSection() {
                   {t("Nouto", "Pickup")}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  {t("Hae tilauksesi suoraan ravintolastamme", "Pick up your order directly from our restaurant")}
+                  {t("Hae tilauksesi suoraan pizzeriastamme", "Pick up your order directly from our restaurant")}
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between p-3 bg-white dark:bg-stone-900 rounded-xl">
@@ -158,7 +158,7 @@ export function ServiceHoursSection() {
                 </div>
                 <div className="text-white">
                   <div className="text-sm font-medium opacity-90">
-                    {t("Ravintolan tila", "Restaurant Status")}
+                    {t("Pizzerian tila", "Restaurant Status")}
                   </div>
                   <div className="text-3xl font-black">
                     {effectiveIsOpen 
