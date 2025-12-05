@@ -1,12 +1,10 @@
-const CACHE_NAME = 'antonio-customer-v4';
-const STATIC_CACHE_NAME = 'antonio-static-v4';
+const CACHE_NAME = 'antonio-customer-v5';
+const STATIC_CACHE_NAME = 'antonio-static-v5';
 
-// Cache static assets only
+// Cache static assets only - minimal list to avoid 404 errors
 const urlsToCache = [
   '/',
-  '/manifest.json',
-  '/generated-icon.png',
-  '/favicon.ico'
+  '/manifest.json'
 ];
 
 // Assets that should always be fetched fresh

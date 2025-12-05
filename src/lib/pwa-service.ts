@@ -65,8 +65,8 @@ export class PWAService {
         ...options,
         requireInteraction: true,
         tag: 'order-notification-' + Date.now(),
-        badge: '/generated-icon.png',
-        icon: '/generated-icon.png',
+        badge: '/logo.png',
+        icon: '/logo.png',
         data: {
           timestamp: Date.now(),
           ...options.data
