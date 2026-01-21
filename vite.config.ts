@@ -37,7 +37,7 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/ws': {
-        target: 'wss://antonio-admin.fly.dev',
+        target: 'wss://antonio-app.fly.dev',
         ws: true,
         changeOrigin: true,
       },
