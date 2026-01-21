@@ -33,7 +33,7 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'https://antonio-admin.fly.dev/',
+        target: 'https://antonio-app.fly.dev/',
         changeOrigin: true,
       },
       '/ws': {
